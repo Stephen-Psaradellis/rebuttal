@@ -5,6 +5,8 @@
 // Reads fixtures/ (a fictional store and ten disputes in Airwallex's object
 // shape) until the sandbox client lands; --render <dir> writes each attached
 // evidence document as the PNG the File Service will receive (src/render.js).
+// Each challenge gets a rebuttal letter (src/letter.js): model-written when
+// LLM_BASE_URL + LLM_MODEL are set and it passes the fact check, else a template.
 // Every POST body is built and
 // validated but NOT sent - each submit step says "dry run".
 
@@ -13,6 +15,7 @@ import { join } from 'node:path';
 import { decide, challengeBody, acceptBody, DEFAULT_POLICY } from './rules.js';
 import { gather, packFor } from './evidence.js';
 import { toPng, attached } from './render.js';
+import { addLetters, completerFromEnv } from './letter.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
@@ -45,13 +48,14 @@ export function processAll(disputes, store, { now = new Date(), policy = DEFAULT
   });
 }
 
-if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}` || process.argv[1]?.endsWith('run.js')) {
+if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/run.js')) {
   const args = process.argv.slice(2);
   const i = args.indexOf('--now');
   const now = i >= 0 ? new Date(args[i + 1]) : new Date();
   const results = processAll(load('disputes.json'), load('store.json'), { now });
+  await addLetters(results, { merchant: load('store.json').store?.name, complete: completerFromEnv() });
   if (args.includes('--json')) {
-    console.log(JSON.stringify(results.map(({ dispute, decision, body, trail }) => ({ id: dispute.id, decision, body, trail })), null, 2));
+    console.log(JSON.stringify(results.map(({ dispute, decision, body, trail, letter }) => ({ id: dispute.id, decision, body, letter, trail })), null, 2));
   } else {
     for (const r of results) {
       console.log(`\n${r.dispute.id}  ${r.decision.action}`);

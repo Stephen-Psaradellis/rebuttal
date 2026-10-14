@@ -15,6 +15,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { processAll } from './run.js';
 import { toPng, attached } from './render.js';
+import { addLetters, completerFromEnv } from './letter.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -77,6 +78,7 @@ function card(r, images) {
   <p class="meta"><code>${esc(d.id)}</code> &middot; ${esc(d.stage)} &middot; ${esc(dueText(dec))}</p>
   <p class="why">${esc(dec.why)}${dec.reason ? ` <span class="reason">(${esc(dec.reason)})</span>` : ''}</p>
   ${fields ? `<h3>Evidence it would send</h3><ul class="fields">${fields}</ul>` : ''}
+  ${r.letter ? `<details class="letter"><summary>Rebuttal letter (${r.letter.source === 'model' ? 'model-written, fact-checked' : 'template'})</summary><pre>${esc(r.letter.text)}</pre><p class="meta">${esc(r.letter.note)}</p></details>` : ''}
   ${missing ? `<h3>Missing</h3><ul class="fields miss">${missing}</ul>` : ''}
   <details><summary>Audit trail (${trail.length} steps)</summary><ol class="trail">${steps}</ol></details>
   ${body ? `<details><summary>Request body (dry run, not sent)</summary><pre>${esc(JSON.stringify(body, null, 2))}</pre></details>` : ''}
@@ -115,7 +117,7 @@ h3{font-size:.85rem;margin:12px 0 4px;color:var(--mute);text-transform:uppercase
 .fields{list-style:none;margin:0;padding:0}.fields li{display:flex;gap:10px;flex-wrap:wrap;padding:3px 0;border-top:1px solid var(--line)}
 .fields code{min-width:min(260px,100%);color:var(--mute)}.fields span{overflow-wrap:anywhere}.miss code{color:var(--esc)}
 a{color:var(--chal)}details{margin-top:10px}summary{cursor:pointer;color:var(--mute)}
-.trail{margin:6px 0 0;padding-left:20px;font-size:.88rem}pre{overflow:auto;background:var(--bg);padding:10px;border-radius:6px;font-size:.8rem;max-width:100%}
+.trail{margin:6px 0 0;padding-left:20px;font-size:.88rem}details.letter pre{white-space:pre-wrap;font-family:inherit;font-size:.9rem}pre{overflow:auto;background:var(--bg);padding:10px;border-radius:6px;font-size:.8rem;max-width:100%}
 footer{color:var(--mute);font-size:.85rem;margin-top:28px}
 </style></head><body><main>
 <h1>Rebuttal case board</h1>
@@ -125,7 +127,7 @@ ${demo ? `<p class="note">Demo data: a fictional store and ten disputes in Airwa
 <div class="tile"><b>${t.stake.toFixed(2)}</b><span>${cur} open</span></div>
 <div class="tile"><b>${t.challenged.toFixed(2)}</b><span>${cur} being fought</span></div></div>
 ${order(results).map((r) => card(r, images)).join('\n')}
-<footer>Source: <a href="https://github.com/Stephen-Psaradellis/rebuttal">github.com/Stephen-Psaradellis/rebuttal</a> (MIT). The agent never challenges with required evidence missing, never accepts above the merchant's limit, and hands arbitration stages to a person.</footer>
+<footer>Source: <a href="https://github.com/Stephen-Psaradellis/rebuttal">github.com/Stephen-Psaradellis/rebuttal</a> (MIT). The agent never challenges with required evidence missing, never accepts above the merchant's limit, hands arbitration stages to a person, and sends a model-written rebuttal letter only when every figure in it appears in the attached records.</footer>
 </main></body></html>
 `;
 }
@@ -138,6 +140,7 @@ if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/board.js')) {
   const outDir = arg('--out', 'site');
   const store = load('store.json');
   const results = processAll(load('disputes.json'), store, { now });
+  await addLetters(results, { merchant: store.store?.name, complete: completerFromEnv() });
   const meta = { merchant: store.store?.name, generatedAt: now.toISOString().slice(0, 10) };
   mkdirSync(join(outDir, 'evidence'), { recursive: true });
   const images = {};
