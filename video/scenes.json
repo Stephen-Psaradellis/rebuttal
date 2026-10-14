@@ -1,0 +1,26 @@
+{
+  "voice": "en-US-AndrewNeural",
+  "rate": "+4%",
+  "scenes": [
+    {"id": "intro",
+     "say": "A store that misses a dispute deadline loses the chargeback by default, and gathering the evidence can take an evening per case. Rebuttal is a dispute response agent for Airwallex that does that evening's work."},
+    {"id": "run",
+     "say": "One pass over every open dispute. For each one it fetches the case, gathers only the records that exist: the order, the delivery scan, emails, account activity from the same device, earlier orders on the same card. Then it decides, and every step goes into an audit trail.",
+     "say_sandbox": "One pass over every open dispute on the Airwallex sandbox. For each one it fetches the case, gathers only the records that exist: the order, the delivery scan, emails, account activity from the same device, earlier orders on the same card. Then it decides, and every step goes into an audit trail."},
+    {"id": "board",
+     "say": "The merchant sees a case board, not a log. Ten disputes: what needs them, what the agent is fighting, what it accepts, and how much money is on the line."},
+    {"id": "escalate",
+     "say": "After anything urgent, the cases that need a person come first. This fraud claim is above the merchant's limit and it was a guest checkout, so there's no account history to prove it. The agent won't guess. It hands the case over with exactly what's missing."},
+    {"id": "challenge",
+     "say": "This one it fights. The customer says fraud, but the order was delivered, the same device logged in, and this card has paid before without a dispute. Each field maps to Airwallex's own evidence names, and every document becomes the image the File Service accepts."},
+    {"id": "letter",
+     "say": "The rebuttal letter is the only part a model writes, and it's fact checked. Any number, date or claim that isn't in the attached records gets the letter thrown out and replaced with a template. Here, all five passed."},
+    {"id": "accept",
+     "say": "And it knows when not to fight. Twelve dollars costs more to contest than to refund. This one shipped with no delivery scan, which isn't proof, so the agent accepts it inside the merchant's limit instead of losing the fee and the case."},
+    {"id": "trail",
+     "say": "Every decision can be replayed: the audit trail, and the exact request body, checked against Airwallex's API before anything is sent.",
+     "say_sandbox": "Every decision can be replayed: the audit trail, and the exact request body, submitted to the Airwallex sandbox."},
+    {"id": "outro",
+     "say": "Rebuttal. Never challenges without the required evidence, never accepts above your limit, and never lets a deadline pass in silence. Built by an AI agent, Claude, for the Airwallex Agentic Banking hackathon."}
+  ]
+}

@@ -65,6 +65,34 @@ what is missing, the rebuttal letter, the audit trail and the request body
 running locally (Ollama); all 5 passed the fact check on this run. In an
 earlier run one letter failed it and went out as the template instead.
 
+## Demo video
+
+`video/` rebuilds the demo video (about 2 minutes, 1440x900) from a real run.
+Nothing on screen is mocked by the recorder:
+
+1. `python video/narrate.py --mode demo --out video/out` writes one narration
+   clip per scene from `video/scenes.json` (Microsoft neural voices via
+   edge-tts, so the voice is synthetic; needs `pip install edge-tts imageio-ffmpeg`).
+2. `node video/record.mjs video/out` first runs `src/run.js` and `src/board.js`
+   itself, with whatever `LLM_BASE_URL` / `LLM_MODEL` / `LLM_API_KEY` you set
+   (none set = template letters). The terminal scene prints that run's actual
+   output and the board shows that run's letters and fact-check results. Then
+   it drives the board in Chromium (Playwright: `npm i -D playwright` and
+   `npx playwright install chromium`), one scene per narration clip.
+3. `python video/mux.py video/out` lays the clips on the recording and writes
+   `video/out/rebuttal-demo.mp4`. A long model wait has its quiet middle cut
+   (the script says how much), and a disclosure line sits on the first 7 seconds.
+
+What is real and what is not: the decisions, evidence matching, rendered pages,
+letters, fact check, audit trail and request bodies are this code's real output.
+The store, customers and disputes are the fictional `fixtures/`, the clock is
+pinned (`REBUTTAL_NOW`, default 2026-10-25) so deadlines read the same every
+run, and nothing is sent to Airwallex: it is a dry run. The current cut used
+Gemma 4 E4B on local Ollama (`LLM_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=gemma4:e4b LLM_API_KEY=ollama`); 5 of 5 letters passed the check.
+`--mode sandbox` (narrate.py and mux.py) switches to the narration lines for a
+sandbox run, once one exists.
+
 ## Next
 
 Run the client against the sandbox (simulated disputes) and serve the board
