@@ -22,10 +22,16 @@ deadline, not the letter.
 - `src/run.js` - one pass over the open disputes with an audit trail. Each
   POST body is built and validated, then **not sent** (dry run) until the
   sandbox client lands.
+- `src/render.js` - evidence documents to images. Airwallex takes evidence
+  files as JPG/PNG/WEBP up to 10MB, so each document becomes a plain page
+  (dispute, field, the record's own lines, where they came from) rendered to
+  PNG with resvg; long ones split into pages rather than shrink. Only the
+  documents the challenge actually names are rendered.
 
 ```
-npm test                                   # 20 tests
+npm install && npm test                    # 25 tests
 node src/run.js --now 2026-10-25T00:00:00Z # the demo pass
+node src/run.js --now 2026-10-25T00:00:00Z --render out  # + 14 evidence PNGs
 ```
 
 Demo output, 10 disputes against a fictional tea shop: 5 challenged, 2
@@ -36,7 +42,7 @@ pre-arbitration case), 1 already closed.
 ## Next
 
 Airwallex sandbox client (list/get disputes, simulated disputes, File Service
-uploads with each document rendered to an image), then a hosted case board with
+uploads of the rendered PNGs), then a hosted case board with
 a live trace of every step.
 
 ## Data

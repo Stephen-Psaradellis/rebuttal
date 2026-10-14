@@ -4,5 +4,10 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "scripts": { "test": "node --test" }
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "2.6.2"
+  }
 }

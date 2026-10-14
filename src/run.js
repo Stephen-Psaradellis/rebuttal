@@ -1,14 +1,18 @@
 // Rebuttal - one pass over the open disputes, with an audit trail.
 //
-//   node src/run.js [--now 2026-10-25T00:00:00Z] [--json]
+//   node src/run.js [--now 2026-10-25T00:00:00Z] [--json] [--render out/]
 //
 // Reads fixtures/ (a fictional store and ten disputes in Airwallex's object
-// shape) until the sandbox client lands; every POST body is built and
+// shape) until the sandbox client lands; --render <dir> writes each attached
+// evidence document as the PNG the File Service will receive (src/render.js).
+// Every POST body is built and
 // validated but NOT sent - each submit step says "dry run".
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { decide, challengeBody, acceptBody, DEFAULT_POLICY } from './rules.js';
 import { gather, packFor } from './evidence.js';
+import { toPng, attached } from './render.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
@@ -52,6 +56,22 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}` || proc
     for (const r of results) {
       console.log(`\n${r.dispute.id}  ${r.decision.action}`);
       for (const e of r.trail) console.log(`  ${e.step.padEnd(8)} ${e.detail}`);
+    }
+    const r = args.indexOf('--render');
+    if (r >= 0) {
+      const dir = args[r + 1] || 'out';
+      mkdirSync(dir, { recursive: true });
+      const meta = { merchant: load('store.json').store?.name, generatedAt: now.toISOString().slice(0, 10) };
+      let files = 0;
+      for (const x of results.filter((x) => x.body?.challenge_details)) {
+        for (const doc of attached(x.gathered.documents, x.body.challenge_details.evidence)) {
+          for (const png of await toPng(doc, { ...meta, disputeId: x.dispute.id })) {
+            writeFileSync(join(dir, png.name), png.bytes);
+            files++;
+          }
+        }
+      }
+      console.log(`rendered ${files} evidence image(s) to ${dir}/`);
     }
     const tally = results.reduce((m, r) => ({ ...m, [r.decision.action]: (m[r.decision.action] || 0) + 1 }), {});
     console.log(`\n${results.length} disputes: ${Object.entries(tally).map(([k, v]) => `${v} ${k}`).join(', ')}`);
