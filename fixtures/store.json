@@ -1,0 +1,56 @@
+{
+  "_note": "Fictional demo store. Every name, address, email and IP is invented; no real customer data.",
+  "store": {
+    "name": "Kettle & Kiln (demo store)",
+    "business_model": "Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.",
+    "refund_policy_url": "https://kettle-and-kiln.example/policies/refunds",
+    "refund_policy": "Unopened items may be returned within 30 days of delivery for a full refund. Orders can be cancelled until they ship; after that, use a return. Damaged items are replaced or refunded on a photo.",
+    "terms_version": "2026-03",
+    "terms_text": "Buyers accept these terms at checkout, including the refund policy above and that tracked delivery to the shipping address is proof of delivery."
+  },
+  "products": {
+    "SKU-OOL": { "title": "Oolong sampler, 6 x 25 g", "description": "Six loose-leaf oolong teas in resealable foil pouches, 25 g each. Ships flat in a printed box.", "price": 38.00 },
+    "SKU-POT": { "title": "Hand-thrown teapot, 600 ml, ash glaze", "description": "Stoneware teapot thrown by hand, 600 ml, with stainless infuser. Each glaze varies; the listing shows four real examples.", "price": 86.00 },
+    "SKU-CUP": { "title": "Tasting cups, set of 4", "description": "Four 80 ml stoneware cups, ash glaze, hand-thrown.", "price": 54.00 },
+    "SKU-MAT": { "title": "Matcha starter kit", "description": "30 g ceremonial matcha, bamboo whisk, scoop and bowl.", "price": 64.00 },
+    "SKU-SAM": { "title": "Single tea sample, 10 g", "description": "One 10 g sample pouch of any tea in the shop.", "price": 12.00 },
+    "SKU-GFT": { "title": "Gift box: teapot + cups + oolong", "description": "Teapot, four tasting cups and the oolong sampler in a gift box.", "price": 210.00 }
+  },
+  "customers": [
+    { "id": "cus_ava", "email": "ava.lindqvist@example.net", "name": "Ava Lindqvist", "account": true, "card_fingerprint": "fp_7f3a" },
+    { "id": "cus_ben", "email": "ben.okafor@example.org", "name": "Ben Okafor", "account": true, "card_fingerprint": "fp_c912" },
+    { "id": "cus_guest1", "email": "j.marsh@example.com", "name": "Jordan Marsh", "account": false, "card_fingerprint": "fp_e055" },
+    { "id": "cus_cleo", "email": "cleo.r@example.net", "name": "Cleo Ramirez", "account": true, "card_fingerprint": "fp_21bd" },
+    { "id": "cus_dev", "email": "dev.patel@example.com", "name": "Dev Patel", "account": true, "card_fingerprint": "fp_90aa" },
+    { "id": "cus_eli", "email": "eli.w@example.org", "name": "Eli Watanabe", "account": true, "card_fingerprint": "fp_4c4c" },
+    { "id": "cus_fay", "email": "fay.n@example.com", "name": "Fay Nguyen", "account": true, "card_fingerprint": "fp_aa01" }
+  ],
+  "orders": [
+    { "id": "KK-1041", "payment_intent_id": "int_demo_1041", "customer": "cus_ava", "items": ["SKU-POT"], "total": 86.00, "currency": "USD", "created_at": "2026-09-20T15:02:00Z", "ip": "203.0.113.24", "device": "iPhone Safari", "ship_to": "Portland, OR 97205", "shipment": { "carrier": "UPS", "tracking": "1Z999AA10123456784", "shipped_at": "2026-09-21T18:00:00Z", "delivered_at": "2026-09-24T19:41:00Z", "proof": "Signed for by A. LINDQVIST at front door, Portland OR 97205" } },
+    { "id": "KK-0877", "payment_intent_id": "int_demo_0877", "customer": "cus_ben", "items": ["SKU-OOL"], "total": 38.00, "currency": "USD", "created_at": "2026-05-03T10:11:00Z", "ip": "198.51.100.7", "device": "Windows Chrome", "ship_to": "Austin, TX 78704", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000001", "shipped_at": "2026-05-04T16:00:00Z", "delivered_at": "2026-05-07T14:20:00Z", "proof": "Delivered, in mailbox, Austin TX 78704" } },
+    { "id": "KK-0951", "payment_intent_id": "int_demo_0951", "customer": "cus_ben", "items": ["SKU-CUP"], "total": 54.00, "currency": "USD", "created_at": "2026-07-14T09:40:00Z", "ip": "198.51.100.7", "device": "Windows Chrome", "ship_to": "Austin, TX 78704", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000002", "shipped_at": "2026-07-15T16:00:00Z", "delivered_at": "2026-07-18T13:05:00Z", "proof": "Delivered, in mailbox, Austin TX 78704" } },
+    { "id": "KK-1003", "payment_intent_id": "int_demo_1003", "customer": "cus_ben", "items": ["SKU-OOL"], "total": 38.00, "currency": "USD", "created_at": "2026-08-30T20:15:00Z", "ip": "198.51.100.7", "device": "Windows Chrome", "ship_to": "Austin, TX 78704", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000003", "shipped_at": "2026-08-31T16:00:00Z", "delivered_at": "2026-09-03T12:30:00Z", "proof": "Delivered, in mailbox, Austin TX 78704" } },
+    { "id": "KK-1052", "payment_intent_id": "int_demo_1052", "customer": "cus_ben", "items": ["SKU-POT", "SKU-CUP"], "total": 142.00, "currency": "USD", "created_at": "2026-09-27T21:03:00Z", "ip": "198.51.100.7", "device": "Windows Chrome", "ship_to": "Austin, TX 78704", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000004", "shipped_at": "2026-09-28T16:00:00Z", "delivered_at": "2026-10-01T15:10:00Z", "proof": "Delivered, front porch, Austin TX 78704" } },
+    { "id": "KK-1058", "payment_intent_id": "int_demo_1058", "customer": "cus_guest1", "items": ["SKU-GFT"], "total": 210.00, "currency": "USD", "created_at": "2026-09-29T03:12:00Z", "ip": "192.0.2.88", "device": "Android Chrome", "ship_to": "Newark, NJ 07102", "shipment": { "carrier": "UPS", "tracking": "1Z999AA10123456785", "shipped_at": "2026-09-30T18:00:00Z", "delivered_at": "2026-10-03T16:00:00Z", "proof": "Left at front door, Newark NJ 07102" } },
+    { "id": "KK-1060", "payment_intent_id": "int_demo_1060", "customer": "cus_cleo", "items": ["SKU-OOL"], "total": 38.00, "currency": "USD", "created_at": "2026-09-30T11:00:00Z", "ip": "203.0.113.90", "device": "Mac Safari", "ship_to": "Denver, CO 80203", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000005", "shipped_at": "2026-10-01T16:00:00Z", "delivered_at": "2026-10-04T12:00:00Z", "proof": "Delivered, in mailbox, Denver CO 80203" } },
+    { "id": "KK-1062", "payment_intent_id": "int_demo_1062", "customer": "cus_dev", "items": ["SKU-SAM"], "total": 12.00, "currency": "USD", "created_at": "2026-10-01T08:30:00Z", "ip": "198.51.100.40", "device": "Android Chrome", "ship_to": "Columbus, OH 43215", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000006", "shipped_at": "2026-10-02T16:00:00Z", "delivered_at": "2026-10-05T11:00:00Z", "proof": "Delivered, in mailbox, Columbus OH 43215" } },
+    { "id": "KK-1064", "payment_intent_id": "int_demo_1064", "customer": "cus_eli", "items": ["SKU-MAT"], "total": 64.00, "currency": "USD", "created_at": "2026-10-02T17:20:00Z", "ip": "203.0.113.150", "device": "iPad Safari", "ship_to": "Seattle, WA 98101", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000007", "shipped_at": "2026-10-03T16:00:00Z", "delivered_at": "2026-10-06T13:00:00Z", "proof": "Delivered, in mailbox, Seattle WA 98101" } },
+    { "id": "KK-1065", "payment_intent_id": "int_demo_1065", "customer": "cus_eli", "items": ["SKU-CUP", "SKU-SAM"], "total": 64.00, "currency": "USD", "created_at": "2026-10-02T17:48:00Z", "ip": "203.0.113.150", "device": "iPad Safari", "ship_to": "Seattle, WA 98101", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000008", "shipped_at": "2026-10-03T16:00:00Z", "delivered_at": "2026-10-06T13:00:00Z", "proof": "Delivered, in mailbox, Seattle WA 98101" } },
+    { "id": "KK-1066", "payment_intent_id": "int_demo_1066", "customer": "cus_fay", "items": ["SKU-OOL"], "total": 29.00, "currency": "USD", "created_at": "2026-10-03T12:00:00Z", "ip": "198.51.100.66", "device": "iPhone Safari", "ship_to": "Tucson, AZ 85701", "shipment": { "carrier": "USPS", "tracking": "9400100000000000000009", "shipped_at": "2026-10-04T16:00:00Z", "delivered_at": null, "proof": null } },
+    { "id": "KK-0990", "payment_intent_id": "int_demo_0990", "customer": "cus_ava", "items": ["SKU-GFT"], "total": 210.00, "currency": "USD", "created_at": "2026-08-10T10:00:00Z", "ip": "203.0.113.24", "device": "iPhone Safari", "ship_to": "Portland, OR 97205", "shipment": { "carrier": "UPS", "tracking": "1Z999AA10123456786", "shipped_at": "2026-08-11T18:00:00Z", "delivered_at": "2026-08-14T17:00:00Z", "proof": "Signed for by A. LINDQVIST, Portland OR 97205" } }
+  ],
+  "logins": [
+    { "customer": "cus_ben", "at": "2026-09-27T20:58:00Z", "ip": "198.51.100.7", "device": "Windows Chrome" },
+    { "customer": "cus_ben", "at": "2026-10-02T08:12:00Z", "ip": "198.51.100.7", "device": "Windows Chrome", "event": "viewed order KK-1052 tracking" },
+    { "customer": "cus_ava", "at": "2026-09-25T07:30:00Z", "ip": "203.0.113.24", "device": "iPhone Safari", "event": "left a 5-star review on SKU-POT" }
+  ],
+  "emails": [
+    { "customer": "cus_ava", "at": "2026-09-25T07:45:00Z", "from": "customer", "subject": "Teapot arrived", "body": "Got the teapot yesterday, the glaze is gorgeous. Thank you!" },
+    { "customer": "cus_cleo", "at": "2026-10-01T09:00:00Z", "from": "customer", "subject": "Cancel my order?", "body": "Can I cancel order KK-1060? Changed my mind." },
+    { "customer": "cus_cleo", "at": "2026-10-01T10:30:00Z", "from": "merchant", "subject": "Re: Cancel my order?", "body": "It shipped this morning, so it can't be cancelled now - but you can return it unopened within 30 days of delivery for a full refund. Here is the return label." },
+    { "customer": "cus_eli", "at": "2026-10-02T17:50:00Z", "from": "customer", "subject": "Second order", "body": "Forgot the cups and a sample in my first order, so I placed a second one." }
+  ],
+  "refunds": [
+    { "order": "KK-1060", "amount": 0, "note": "No return received as of 2026-10-14." }
+  ]
+}
