@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebuttal case board</title>
+<meta name="description" content="Dispute Response Agent for Airwallex: every open dispute, what the agent decided, and the evidence behind it.">
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1b;--mute:#5f5f5a;--line:#e3e2dd;--esc:#b4232a;--chal:#1f5fbf;--acc:#5f6b2b;--none:#7a7a74;--hot:#b4232a}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#21211f;--ink:#ecebe6;--mute:#a3a29b;--line:#34332f;--esc:#f0767b;--chal:#7fb0ff;--acc:#b9c77a;--none:#9a9992;--hot:#f0767b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}.sub{color:var(--mute);margin:0 0 18px}
+.note{border:1px solid var(--line);background:var(--card);padding:10px 14px;border-radius:8px;color:var(--mute);font-size:.9rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:18px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile b{display:block;font-size:1.4rem}.tile span{color:var(--mute);font-size:.85rem}
+.case{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--none);border-radius:8px;padding:14px 16px;margin:12px 0}
+.a-ESCALATE{border-left-color:var(--esc)}.a-CHALLENGE{border-left-color:var(--chal)}.a-ACCEPT{border-left-color:var(--acc)}
+.case header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+.a-ESCALATE .badge{color:var(--esc)}.a-CHALLENGE .badge{color:var(--chal)}.a-ACCEPT .badge{color:var(--acc)}.a-NONE .badge{color:var(--none)}
+.badge.hot{color:var(--hot)!important}.amt{margin-left:auto;font-weight:600}
+h2{font-size:1.05rem;margin:8px 0 2px}h2 small{color:var(--mute);font-weight:400}
+h3{font-size:.85rem;margin:12px 0 4px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.meta{color:var(--mute);margin:0;font-size:.88rem}.why{margin:8px 0 0}.reason{color:var(--mute)}
+.fields{list-style:none;margin:0;padding:0}.fields li{display:flex;gap:10px;flex-wrap:wrap;padding:3px 0;border-top:1px solid var(--line)}
+.fields code{min-width:min(260px,100%);color:var(--mute)}.fields span{overflow-wrap:anywhere}.miss code{color:var(--esc)}
+a{color:var(--chal)}details{margin-top:10px}summary{cursor:pointer;color:var(--mute)}
+.trail{margin:6px 0 0;padding-left:20px;font-size:.88rem}pre{overflow:auto;background:var(--bg);padding:10px;border-radius:6px;font-size:.8rem;max-width:100%}
+footer{color:var(--mute);font-size:.85rem;margin-top:28px}
+</style></head><body><main>
+<h1>Rebuttal case board</h1>
+<p class="sub">Kettle &amp; Kiln (demo store) &middot; 10 disputes &middot; run 2026-10-25</p>
+<p class="note">Demo data: a fictional store and ten disputes in Airwallex's payment_disputes shape. This is a dry run - every request body below is built and checked but nothing is sent. Built by an AI agent (Claude) for the Airwallex Agentic Banking hackathon.</p>
+<div class="tiles"><div class="tile"><b>2</b><span>Needs you</span></div><div class="tile"><b>5</b><span>Challenge</span></div><div class="tile"><b>2</b><span>Accept</span></div><div class="tile"><b>1</b><span>No action</span></div>
+<div class="tile"><b>845.00</b><span>USD open</span></div>
+<div class="tile"><b>540.00</b><span>USD being fought</span></div></div>
+<article class="case a-CHALLENGE urgent" id="pd_demo_02">
+  <header>
+    <span class="badge">Challenge</span>
+    <span class="badge hot">Urgent</span>
+    <span class="amt">142.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>pd_demo_02</code> &middot; CHARGEBACK &middot; 36 hours left</p>
+  <p class="why">FRAUDULENT: every required item is on file <span class="reason">(PURCHASE_HISTORY)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_pd_demo_02_order_snapshot.png" target="_blank" rel="noopener">doc_pd_demo_02_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>order_fulfillment_file_ids</code><span><a href="evidence/doc_pd_demo_02_order_fulfillment.png" target="_blank" rel="noopener">doc_pd_demo_02_order_fulfillment.png</a></span></li><li><code>access_activity_file_ids</code><span><a href="evidence/doc_pd_demo_02_access_activity.png" target="_blank" rel="noopener">doc_pd_demo_02_access_activity.png</a></span></li><li><code>previous_purchase_similar_product_file_ids</code><span><a href="evidence/doc_pd_demo_02_previous_purchase_similar_product.png" target="_blank" rel="noopener">doc_pd_demo_02_previous_purchase_similar_product.png</a></span></li><li><code>previous_dispute_won_on_same_card_file_ids</code><span><a href="evidence/doc_pd_demo_02_previous_dispute_won_on_same_card.png" target="_blank" rel="noopener">doc_pd_demo_02_previous_dispute_won_on_same_card.png</a></span></li></ul>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_02 FRAUDULENT CHARGEBACK REQUIRES_RESPONSE, 142.00 USD, due 2026-10-26T12:00:00+0000</li><li><b>gather</b> order KK-1052 found</li><li><b>gather</b> delivered 2026-10-01 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 2 earlier undisputed order(s) on the same card</li><li><b>gather</b> 1 earlier dispute(s) won on this card</li><li><b>decide</b> CHALLENGE (PURCHASE_HISTORY): FRAUDULENT: every required item is on file [URGENT]</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_02/challenge with 6 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_02-2026-10-25&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;PURCHASE_HISTORY&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_pd_demo_02_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;order_fulfillment_file_ids&quot;: [
+        &quot;doc_pd_demo_02_order_fulfillment&quot;
+      ],
+      &quot;access_activity_file_ids&quot;: [
+        &quot;doc_pd_demo_02_access_activity&quot;
+      ],
+      &quot;previous_purchase_similar_product_file_ids&quot;: [
+        &quot;doc_pd_demo_02_previous_purchase_similar_product&quot;
+      ],
+      &quot;previous_dispute_won_on_same_card_file_ids&quot;: [
+        &quot;doc_pd_demo_02_previous_dispute_won_on_same_card&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-ESCALATE" id="pd_demo_07">
+  <header>
+    <span class="badge">Needs you</span>
+    
+    <span class="amt">54.00 USD</span>
+  </header>
+  <h2>PRODUCT_UNACCEPTABLE <small>13.3</small></h2>
+  <p class="meta"><code>pd_demo_07</code> &middot; PRE_ARBITRATION &middot; 8 days left</p>
+  <p class="why">PRE_ARBITRATION cannot be challenged through the API</p>
+  
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_07 PRODUCT_UNACCEPTABLE PRE_ARBITRATION REQUIRES_RESPONSE, 54.00 USD, due 2026-11-02T00:00:00+0000</li><li><b>gather</b> order KK-0951 found</li><li><b>gather</b> delivered 2026-07-18 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>gather</b> 1 earlier dispute(s) won on this card</li><li><b>decide</b> ESCALATE: PRE_ARBITRATION cannot be challenged through the API</li><li><b>escalate</b> case card sent to the merchant; nothing is submitted without them</li></ol></details>
+  
+</article>
+<article class="case a-ESCALATE" id="pd_demo_03">
+  <header>
+    <span class="badge">Needs you</span>
+    
+    <span class="amt">210.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>pd_demo_03</code> &middot; CHARGEBACK &middot; 12 days left</p>
+  <p class="why">missing required evidence (access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids) and 210 is above the auto-accept limit</p>
+  
+  <h3>Missing</h3><ul class="fields miss"><li><code>access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids</code></li></ul>
+  <details><summary>Audit trail (6 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_03 FRAUDULENT CHARGEBACK REQUIRES_RESPONSE, 210.00 USD, due 2026-11-06T00:00:00+0000</li><li><b>gather</b> order KK-1058 found</li><li><b>gather</b> delivered 2026-10-03 (UPS)</li><li><b>gather</b> guest checkout: no account activity to show</li><li><b>decide</b> ESCALATE: missing required evidence (access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids) and 210 is above the auto-accept limit</li><li><b>escalate</b> case card sent to the merchant; nothing is submitted without them</li></ol></details>
+  
+</article>
+<article class="case a-CHALLENGE" id="pd_demo_01">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">86.00 USD</span>
+  </header>
+  <h2>PRODUCT_NOT_RECEIVED <small>13.1</small></h2>
+  <p class="meta"><code>pd_demo_01</code> &middot; CHARGEBACK &middot; 10 days left</p>
+  <p class="why">PRODUCT_NOT_RECEIVED: every required item is on file <span class="reason">(PRODUCT_RECEIVED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_pd_demo_01_order_snapshot.png" target="_blank" rel="noopener">doc_pd_demo_01_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>order_fulfilled_at</code><span>2026-09-24</span></li><li><code>order_fulfillment_file_ids</code><span><a href="evidence/doc_pd_demo_01_order_fulfillment.png" target="_blank" rel="noopener">doc_pd_demo_01_order_fulfillment.png</a></span></li><li><code>customer_communication_file_ids</code><span><a href="evidence/doc_pd_demo_01_customer_communication.png" target="_blank" rel="noopener">doc_pd_demo_01_customer_communication.png</a></span></li></ul>
+  
+  <details><summary>Audit trail (7 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_01 PRODUCT_NOT_RECEIVED CHARGEBACK REQUIRES_RESPONSE, 86.00 USD, due 2026-11-04T00:00:00+0000</li><li><b>gather</b> order KK-1041 found</li><li><b>gather</b> delivered 2026-09-24 (UPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 account event(s) from the order&#39;s IP/device</li><li><b>decide</b> CHALLENGE (PRODUCT_RECEIVED): PRODUCT_NOT_RECEIVED: every required item is on file</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_01/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_01-2026-10-25&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;PRODUCT_RECEIVED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_pd_demo_01_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;order_fulfilled_at&quot;: &quot;2026-09-24&quot;,
+      &quot;order_fulfillment_file_ids&quot;: [
+        &quot;doc_pd_demo_01_order_fulfillment&quot;
+      ],
+      &quot;customer_communication_file_ids&quot;: [
+        &quot;doc_pd_demo_01_customer_communication&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="pd_demo_04">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">38.00 USD</span>
+  </header>
+  <h2>CREDIT_NOT_PROCESSED <small>13.6</small></h2>
+  <p class="meta"><code>pd_demo_04</code> &middot; CHARGEBACK &middot; 11 days left</p>
+  <p class="why">CREDIT_NOT_PROCESSED: every required item is on file <span class="reason">(NOT_ENTITLED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_pd_demo_04_order_snapshot.png" target="_blank" rel="noopener">doc_pd_demo_04_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>refund_policy_url</code><span>https://kettle-and-kiln.example/policies/refunds</span></li><li><code>refund_policy_file_ids</code><span><a href="evidence/doc_pd_demo_04_refund_policy.png" target="_blank" rel="noopener">doc_pd_demo_04_refund_policy.png</a></span></li><li><code>user_agreement_file_ids</code><span><a href="evidence/doc_pd_demo_04_user_agreement.png" target="_blank" rel="noopener">doc_pd_demo_04_user_agreement.png</a></span></li><li><code>customer_communication_file_ids</code><span><a href="evidence/doc_pd_demo_04_customer_communication.png" target="_blank" rel="noopener">doc_pd_demo_04_customer_communication.png</a></span></li></ul>
+  
+  <details><summary>Audit trail (6 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_04 CREDIT_NOT_PROCESSED CHARGEBACK REQUIRES_RESPONSE, 38.00 USD, due 2026-11-05T00:00:00+0000</li><li><b>gather</b> order KK-1060 found</li><li><b>gather</b> delivered 2026-10-04 (USPS)</li><li><b>gather</b> 2 email(s) with the customer</li><li><b>decide</b> CHALLENGE (NOT_ENTITLED): CREDIT_NOT_PROCESSED: every required item is on file</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_04/challenge with 6 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_04-2026-10-25&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;NOT_ENTITLED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_pd_demo_04_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;refund_policy_url&quot;: &quot;https://kettle-and-kiln.example/policies/refunds&quot;,
+      &quot;refund_policy_file_ids&quot;: [
+        &quot;doc_pd_demo_04_refund_policy&quot;
+      ],
+      &quot;user_agreement_file_ids&quot;: [
+        &quot;doc_pd_demo_04_user_agreement&quot;
+      ],
+      &quot;customer_communication_file_ids&quot;: [
+        &quot;doc_pd_demo_04_customer_communication&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="pd_demo_06">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">64.00 USD</span>
+  </header>
+  <h2>DUPLICATE_CHARGE <small>12.6.1</small></h2>
+  <p class="meta"><code>pd_demo_06</code> &middot; CHARGEBACK &middot; 13 days left</p>
+  <p class="why">DUPLICATE_CHARGE: every required item is on file <span class="reason">(SEPARATE_PRODUCT)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_pd_demo_06_order_snapshot.png" target="_blank" rel="noopener">doc_pd_demo_06_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>duplicate_explanation</code><span>Two separate orders, not one order charged twice: KK-1064 (Matcha starter kit) and KK-1065 (Tasting cups, set of 4, Single tea sample, 10 g), placed 2026-10-02T17:20:00Z and 2026-10-02T17:48:00Z, each shipped and delivered separately.</span></li><li><code>duplicate_transaction_created_at</code><span>2026-10-02T17:20:00Z</span></li><li><code>duplicate_payment_file_ids</code><span><a href="evidence/doc_pd_demo_06_duplicate_payment.png" target="_blank" rel="noopener">doc_pd_demo_06_duplicate_payment.png</a></span></li></ul>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_06 DUPLICATE_CHARGE CHARGEBACK REQUIRES_RESPONSE, 64.00 USD, due 2026-11-07T00:00:00+0000</li><li><b>gather</b> order KK-1065 found</li><li><b>gather</b> delivered 2026-10-06 (USPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>gather</b> KK-1064 is a separate order with different items</li><li><b>decide</b> CHALLENGE (SEPARATE_PRODUCT): DUPLICATE_CHARGE: every required item is on file</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_06/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_06-2026-10-25&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;SEPARATE_PRODUCT&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_pd_demo_06_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;duplicate_explanation&quot;: &quot;Two separate orders, not one order charged twice: KK-1064 (Matcha starter kit) and KK-1065 (Tasting cups, set of 4, Single tea sample, 10 g), placed 2026-10-02T17:20:00Z and 2026-10-02T17:48:00Z, each shipped and delivered separately.&quot;,
+      &quot;duplicate_transaction_created_at&quot;: &quot;2026-10-02T17:20:00Z&quot;,
+      &quot;duplicate_payment_file_ids&quot;: [
+        &quot;doc_pd_demo_06_duplicate_payment&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="pd_demo_09">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">210.00 USD</span>
+  </header>
+  <h2>CANCELLED_PRODUCT <small>13.7</small></h2>
+  <p class="meta"><code>pd_demo_09</code> &middot; CHARGEBACK &middot; 15 days left</p>
+  <p class="why">the customer was already refunded in full <span class="reason">(CUSTOMER_REFUNDED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li></ul>
+  
+  <details><summary>Audit trail (7 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_09 CANCELLED_PRODUCT CHARGEBACK REQUIRES_RESPONSE, 210.00 USD, due 2026-11-09T00:00:00+0000</li><li><b>gather</b> order KK-0990 found</li><li><b>gather</b> delivered 2026-08-14 (UPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 account event(s) from the order&#39;s IP/device</li><li><b>decide</b> CHALLENGE (CUSTOMER_REFUNDED): the customer was already refunded in full</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_09/challenge with 1 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_09-2026-10-25&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;CUSTOMER_REFUNDED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;evidence&quot;: {
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-ACCEPT" id="pd_demo_05">
+  <header>
+    <span class="badge">Accept</span>
+    
+    <span class="amt">12.00 USD</span>
+  </header>
+  <h2>PRODUCT_UNACCEPTABLE <small>13.3</small></h2>
+  <p class="meta"><code>pd_demo_05</code> &middot; RFI &middot; 9 days left</p>
+  <p class="why">12 is below the cost of fighting (15) <span class="reason">(LOW_VALUE_TRANSACTION)</span></p>
+  
+  
+  <details><summary>Audit trail (5 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_05 PRODUCT_UNACCEPTABLE RFI REQUIRES_RESPONSE, 12.00 USD, due 2026-11-03T00:00:00+0000</li><li><b>gather</b> order KK-1062 found</li><li><b>gather</b> delivered 2026-10-05 (USPS)</li><li><b>decide</b> ACCEPT (LOW_VALUE_TRANSACTION): 12 is below the cost of fighting (15)</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_05/accept (LOW_VALUE_TRANSACTION)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_05-2026-10-25&quot;,
+  &quot;accepted_by&quot;: &quot;rebuttal-agent&quot;,
+  &quot;reason&quot;: &quot;LOW_VALUE_TRANSACTION&quot;,
+  &quot;description&quot;: &quot;12 is below the cost of fighting (15)&quot;,
+  &quot;refund&quot;: {
+    &quot;amount&quot;: 12,
+    &quot;reason&quot;: &quot;REQUESTED_BY_CUSTOMER&quot;
+  }
+}</pre></details>
+</article>
+<article class="case a-ACCEPT" id="pd_demo_08">
+  <header>
+    <span class="badge">Accept</span>
+    
+    <span class="amt">29.00 USD</span>
+  </header>
+  <h2>PRODUCT_NOT_RECEIVED <small>13.1</small></h2>
+  <p class="meta"><code>pd_demo_08</code> &middot; CHARGEBACK &middot; 14 days left</p>
+  <p class="why">missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit <span class="reason">(VALID_CUSTOMER_DISPUTE)</span></p>
+  
+  <h3>Missing</h3><ul class="fields miss"><li><code>order_fulfillment_file_ids</code></li><li><code>order_fulfilled_at</code></li></ul>
+  <details><summary>Audit trail (5 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_08 PRODUCT_NOT_RECEIVED CHARGEBACK REQUIRES_RESPONSE, 29.00 USD, due 2026-11-08T00:00:00+0000</li><li><b>gather</b> order KK-1066 found</li><li><b>gather</b> shipped 2026-10-04 (USPS 9400100000000000000009) but no delivery scan - not proof of delivery</li><li><b>decide</b> ACCEPT (VALID_CUSTOMER_DISPUTE): missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/pd_demo_08/accept (VALID_CUSTOMER_DISPUTE)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-pd_demo_08-2026-10-25&quot;,
+  &quot;accepted_by&quot;: &quot;rebuttal-agent&quot;,
+  &quot;reason&quot;: &quot;VALID_CUSTOMER_DISPUTE&quot;,
+  &quot;description&quot;: &quot;missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit&quot;
+}</pre></details>
+</article>
+<article class="case a-NONE" id="pd_demo_10">
+  <header>
+    <span class="badge">No action</span>
+    
+    <span class="amt">38.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>pd_demo_10</code> &middot; CHARGEBACK &middot; deadline passed</p>
+  <p class="why">status is WON; nothing to answer</p>
+  
+  
+  <details><summary>Audit trail (6 steps)</summary><ol class="trail"><li><b>fetch</b> pd_demo_10 FRAUDULENT CHARGEBACK WON, 38.00 USD, due 2026-10-01T00:00:00+0000</li><li><b>gather</b> order KK-1003 found</li><li><b>gather</b> delivered 2026-09-03 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>decide</b> NONE: status is WON; nothing to answer</li></ol></details>
+  
+</article>
+<footer>Source: <a href="https://github.com/Stephen-Psaradellis/rebuttal">github.com/Stephen-Psaradellis/rebuttal</a> (MIT). The agent never challenges with required evidence missing, never accepts above the merchant's limit, and hands arbitration stages to a person.</footer>
+</main></body></html>

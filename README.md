@@ -40,6 +40,7 @@ deadline, not the letter.
 npm install && npm test                    # 33 tests
 node src/run.js --now 2026-10-25T00:00:00Z # the demo pass
 node src/run.js --now 2026-10-25T00:00:00Z --render out  # + 14 evidence PNGs
+node src/board.js --now 2026-10-25T00:00:00Z --out docs  # the case board
 ```
 
 Demo output, 10 disputes against a fictional tea shop: 5 challenged, 2
@@ -47,10 +48,15 @@ accepted (a $12 case below the cost of fighting; a lost parcel with no delivery
 scan), 2 escalated (a guest-checkout fraud claim above the auto-accept limit; a
 pre-arbitration case), 1 already closed.
 
+Case board (static, from the demo pass): https://stephen-psaradellis.github.io/rebuttal/ -
+cases that need the merchant first, then by deadline; each card shows the
+decision and why, the evidence fields it would send with the rendered pages,
+what is missing, the audit trail and the request body (`src/board.js`).
+
 ## Next
 
-Run the client against the sandbox (simulated disputes), then a hosted case
-board with a live trace of every step.
+Run the client against the sandbox (simulated disputes) and serve the board
+from it, with a live trace of every step.
 
 ## Data
 
