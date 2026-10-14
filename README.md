@@ -20,16 +20,24 @@ deadline, not the letter.
   purchases and won disputes on the same card, the refund policy). A parcel with
   no delivery scan is *not* proof of delivery, so it fills nothing and says why.
 - `src/run.js` - one pass over the open disputes with an audit trail. Each
-  POST body is built and validated, then **not sent** (dry run) until the
-  sandbox client lands.
+  POST body is built and validated, then **not sent** (dry run) until it runs
+  with sandbox keys.
 - `src/render.js` - evidence documents to images. Airwallex takes evidence
   files as JPG/PNG/WEBP up to 10MB, so each document becomes a plain page
   (dispute, field, the record's own lines, where they came from) rendered to
   PNG with resvg; long ones split into pages rather than shrink. Only the
   documents the challenge actually names are rendered.
+- `src/client.js` - the Airwallex client: login with a 30-minute token reused
+  until it expires, dispute list (follows `page_after`) and get, File Service
+  upload to the `files.` host, challenge and accept. Re-logs in on
+  `credentials_expired`, backs off on 429. `submitChallenge` uploads every
+  rendered page, swaps our document ids for File Service ids (a multi-page
+  document becomes several files, in order) and refuses to post a challenge
+  that points at a document it did not upload. Tested against a fake Airwallex;
+  sandbox keys come with the hackathon account.
 
 ```
-npm install && npm test                    # 25 tests
+npm install && npm test                    # 33 tests
 node src/run.js --now 2026-10-25T00:00:00Z # the demo pass
 node src/run.js --now 2026-10-25T00:00:00Z --render out  # + 14 evidence PNGs
 ```
@@ -41,9 +49,8 @@ pre-arbitration case), 1 already closed.
 
 ## Next
 
-Airwallex sandbox client (list/get disputes, simulated disputes, File Service
-uploads of the rendered PNGs), then a hosted case board with
-a live trace of every step.
+Run the client against the sandbox (simulated disputes), then a hosted case
+board with a live trace of every step.
 
 ## Data
 
