@@ -13,8 +13,16 @@ deadline; the letter is written last, and only from what was found.
 - `src/rules.js` - the decision contract, on Airwallex's own enums and evidence
   field names (`/api/v1/pa/payment_disputes`). Hard rules: it never challenges
   without the evidence the reason code needs, never accepts above a
-  merchant-set amount without a person, and escalates pre-arbitration and
-  bank-side reason codes instead of guessing.
+  merchant-set amount without a person (default $50), and escalates
+  pre-arbitration and bank-side reason codes instead of guessing. Cost is a
+  second merchant-set amount (default $15): below it, fighting costs more than
+  the case, so it accepts. When evidence is missing, the decision names the
+  exact item (for example, a delivery scan), so an escalated case tells the
+  merchant what to go and find. A customer already refunded in full is
+  answered as `CUSTOMER_REFUNDED`, from the refund on the dispute itself.
+  The evidence table per reason code is ours: Airwallex publishes the field
+  names but not which ones each reason needs, so it follows the card networks'
+  usual compelling-evidence lists.
 - `src/evidence.js` - the evidence gatherer. It fills a field only from a record
   that exists (orders, delivery scans, account activity, emails, earlier
   purchases and won disputes on the same card, the refund policy). A parcel with
@@ -102,6 +110,12 @@ from it, with a live trace of every step.
 
 `fixtures/` is invented: the store, customers, emails and addresses are
 fictional, and IPs come from the documentation ranges.
+
+The gatherer reads one store shape (`fixtures/store.json`): customers with a
+card fingerprint, orders with IP, device and shipment scans, account logins,
+customer emails and refunds. A real shop connects by exporting to that shape;
+the store's order and fulfilment export and the support mailbox are the first
+two sources it needs. No connector to a live store is built yet.
 
 ## AI use
 
