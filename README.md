@@ -43,6 +43,14 @@ deadline; the letter is written last, and only from what was found.
   document becomes several files, in order) and refuses to post a challenge
   that points at a document it did not upload. Tested against a fake Airwallex;
   sandbox keys come with the hackathon account.
+- `src/sandbox.js` - real disputes to answer. For each fixture case it creates
+  a PaymentIntent for the order's total, confirms it with a sandbox test card,
+  and asks Airwallex's simulation API for a dispute at the same stage and
+  reason, then points the store's order at the real payment id. Deadlines keep
+  their distance from the fixture day, so the urgent case stays urgent.
+  `node src/run.js --sandbox` (keys in `.env`, see `.env.example`) seeds and runs
+  the same pass; `--submit` then sends the challenges and accepts. Escalations
+  and no-action cases are never sent. Not yet run against the sandbox.
 - `src/letter.js` - the rebuttal letter, the one place a model writes. Each
   challenge gets a one-page cover letter to the issuer's reviewer, attached as
   page 1 of the order snapshot. Before a model letter is used, every number,
@@ -103,8 +111,8 @@ sandbox run, once one exists.
 
 ## Next
 
-Run the client against the sandbox (simulated disputes) and serve the board
-from it, with a live trace of every step.
+Run `node src/run.js --sandbox --submit` once sandbox keys arrive and serve the
+board from it, with a live trace of every step.
 
 ## Data
 

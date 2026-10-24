@@ -115,6 +115,19 @@ export function createClient({ clientId, apiKey, env = 'sandbox', fetch = global
       { json: body, where: `challenge ${id}` }),
     accept: (id, body) => call('POST', `${host.api}/api/v1/pa/payment_disputes/${encodeURIComponent(id)}/accept`,
       { json: body, where: `accept ${id}` }),
+
+    // Payments + the sandbox-only simulation API (read 2026-10-24 from
+    // docs/developer-tools/sandbox-environment/payments/simulate-payment-disputes),
+    // used by src/sandbox.js to make real disputes to answer.
+    createPaymentIntent: (body) => call('POST', `${host.api}/api/v1/pa/payment_intents/create`,
+      { json: body, where: `create payment ${body.merchant_order_id}` }),
+    confirmPaymentIntent: (id, body) => call('POST', `${host.api}/api/v1/pa/payment_intents/${encodeURIComponent(id)}/confirm`,
+      { json: body, where: `confirm ${id}` }),
+    simulateDispute(body) {
+      if (env !== 'sandbox') throw new Error('simulation endpoints exist only in the sandbox');
+      return call('POST', `${host.api}/api/v1/simulation/pa/payment_disputes/create`,
+        { json: body, where: `simulate dispute on ${body.payment_intent_id}` });
+    },
   };
 }
 

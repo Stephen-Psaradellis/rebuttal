@@ -1,6 +1,7 @@
 // Rebuttal - one pass over the open disputes, with an audit trail.
 //
 //   node src/run.js [--now 2026-10-25T00:00:00Z] [--json] [--render out/]
+//   node src/run.js --sandbox [--submit]   real sandbox disputes (src/sandbox.js)
 //
 // Reads fixtures/ (a fictional store and ten disputes in Airwallex's object
 // shape) until the sandbox client lands; --render <dir> writes each attached
@@ -8,7 +9,8 @@
 // Each challenge gets a rebuttal letter (src/letter.js): model-written when
 // LLM_BASE_URL + LLM_MODEL are set and it passes the fact check, else a template.
 // Every POST body is built and
-// validated but NOT sent - each submit step says "dry run".
+// validated but NOT sent - each submit step says "dry run" - unless
+// --sandbox --submit, which sends challenges and accepts to the sandbox.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,6 +18,8 @@ import { decide, challengeBody, acceptBody, DEFAULT_POLICY } from './rules.js';
 import { gather, packFor } from './evidence.js';
 import { toPng, attached } from './render.js';
 import { addLetters, completerFromEnv } from './letter.js';
+import { createClient, submitChallenge } from './client.js';
+import { seed } from './sandbox.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
@@ -48,12 +52,61 @@ export function processAll(disputes, store, { now = new Date(), policy = DEFAULT
   });
 }
 
+// .env as KEY=value lines; the process environment wins.
+function loadEnv() {
+  try {
+    for (const line of readFileSync(new URL('../.env', import.meta.url), 'utf8').split(/\r?\n/)) {
+      const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/);
+      if (m && m[2] && process.env[m[1]] === undefined) process.env[m[1]] = m[2];
+    }
+  } catch { /* no .env */ }
+}
+
+// --submit: post what the dry run built - upload each challenge's rendered
+// pages, then challenge or accept. ESCALATE and NONE are never sent.
+async function submitAll(client, results, meta) {
+  for (const x of results) {
+    try {
+      if (x.decision.action === 'CHALLENGE') {
+        const pages = {};
+        for (const doc of attached(x.gathered.documents, x.body.challenge_details.evidence)) {
+          pages[doc.id] = await toPng(doc, { ...meta, disputeId: x.dispute.id });
+        }
+        const r = await submitChallenge(client, x.dispute.id, x.body, pages);
+        x.trail.push({ step: 'submit', detail: `sent: ${Object.values(r.uploaded).flat().length} file(s) uploaded, `
+          + `dispute now ${r.reply.status || '?'}` });
+      } else if (x.decision.action === 'ACCEPT') {
+        const r = await client.accept(x.dispute.id, x.body);
+        x.trail.push({ step: 'submit', detail: `sent: accepted, dispute now ${r.status || '?'}` });
+      }
+    } catch (e) {
+      x.trail.push({ step: 'submit', detail: `FAILED ${e.message}` });
+    }
+  }
+}
+
 if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/run.js')) {
   const args = process.argv.slice(2);
   const i = args.indexOf('--now');
   const now = i >= 0 ? new Date(args[i + 1]) : new Date();
-  const results = processAll(load('disputes.json'), load('store.json'), { now });
-  await addLetters(results, { merchant: load('store.json').store?.name, complete: completerFromEnv() });
+  let disputes = load('disputes.json');
+  let store = load('store.json');
+  let client = null;
+  if (args.includes('--sandbox')) {
+    loadEnv();
+    client = createClient({ clientId: process.env.AIRWALLEX_CLIENT_ID, apiKey: process.env.AIRWALLEX_API_KEY });
+    const s = await seed(client, disputes, store, { now });
+    for (const line of s.report) console.log(`seed     ${line}`);
+    if (!s.disputes.length) { console.error('no sandbox disputes were created'); process.exit(1); }
+    ({ disputes, store } = s);
+    mkdirSync('out', { recursive: true });
+    writeFileSync('out/sandbox-seed.json', JSON.stringify({ at: now.toISOString(), report: s.report, disputes }, null, 2));
+  }
+  const results = processAll(disputes, store, { now });
+  await addLetters(results, { merchant: store.store?.name, complete: completerFromEnv() });
+  if (client && args.includes('--submit')) {
+    await submitAll(client, results, { merchant: store.store?.name, generatedAt: now.toISOString().slice(0, 10) });
+  }
   if (args.includes('--json')) {
     console.log(JSON.stringify(results.map(({ dispute, decision, body, trail, letter }) => ({ id: dispute.id, decision, body, letter, trail })), null, 2));
   } else {
