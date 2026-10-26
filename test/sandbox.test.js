@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createClient } from '../src/client.js';
-import { seed, seedPlan, REASON_CODES } from '../src/sandbox.js';
+import { seed, seedPlan, verdicts, REASON_CODES } from '../src/sandbox.js';
 import { processAll } from '../src/run.js';
 
 const load = (n) => JSON.parse(readFileSync(new URL(`../fixtures/${n}`, import.meta.url), 'utf8'));
@@ -29,6 +29,11 @@ function fakeSandbox({ refuse = [] } = {}) {
       return ok(201, { id: `pd_sb_${n}`, payment_intent_id: body.payment_intent_id, status: 'REQUIRES_RESPONSE',
         stage: body.stage, amount: body.amount, currency: 'USD', due_at: body.due_at,
         reason: { type: byCode[body.reason_code] || 'FRAUDULENT', original_code: body.reason_code }, refunds: [] });
+    }
+    const m = path.match(/^\/api\/v1\/simulation\/pa\/payment_disputes\/([^/]+)\/(resolve|escalate)$/);
+    if (m) {
+      const status = m[2] === 'escalate' ? 'REQUIRES_RESPONSE' : body.in_favor_of === 'MERCHANT' ? 'WON' : 'LOST';
+      return ok(200, { id: m[1], status, ...(m[2] === 'escalate' ? { stage: 'PRE_ARBITRATION' } : {}) });
     }
     return { ok: false, status: 404, json: async () => ({}), headers: { get: () => null } };
   };
@@ -68,4 +73,25 @@ test('a refused reason code is reported per dispute, the rest still seed', async
 test('simulation is refused outside the sandbox', () => {
   const c = createClient({ clientId: 'c', apiKey: 'k', env: 'prod', fetch: async () => { throw new Error('no'); } });
   assert.throws(() => c.simulateDispute({ payment_intent_id: 'int_x' }), /only in the sandbox/);
+});
+
+test('verdicts play the issuer for challenged cases only', async () => {
+  const { client, calls } = fakeSandbox();
+  const results = [
+    { dispute: { id: 'pd_a' }, decision: { action: 'challenge' } },
+    { dispute: { id: 'pd_b' }, decision: { action: 'accept' } },
+    { dispute: { id: 'pd_c' }, decision: { action: 'challenge' } },
+  ];
+  assert.deepEqual(await verdicts(client, results, 'MERCHANT'), ['pd_a: MERCHANT -> WON', 'pd_c: MERCHANT -> WON']);
+  assert.deepEqual(calls.filter((c) => c.path.includes('/resolve')).map((c) => c.body.in_favor_of), ['MERCHANT', 'MERCHANT']);
+  const esc = await verdicts(client, results, 'ESCALATE');
+  assert.equal(esc[0], 'pd_a: ESCALATE -> REQUIRES_RESPONSE (PRE_ARBITRATION)');
+  assert.ok(!calls.some((c) => c.path.includes('pd_b')));
+});
+
+test('sub-codes the docs table lacks fold to their listed parent', async () => {
+  const { sandboxCode } = await import('../src/sandbox.js');
+  assert.equal(sandboxCode('12.6.1'), '12.6');
+  assert.equal(sandboxCode('10.4'), '10.4');
+  assert.equal(sandboxCode(undefined), undefined);
 });

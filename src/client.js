@@ -128,6 +128,19 @@ export function createClient({ clientId, apiKey, env = 'sandbox', fetch = global
       return call('POST', `${host.api}/api/v1/simulation/pa/payment_disputes/create`,
         { json: body, where: `simulate dispute on ${body.payment_intent_id}` });
     },
+    // The issuer's side of a simulated dispute: resolve takes in_favor_of
+    // MERCHANT (-> WON/REVERSED) or CUSTOMER (-> LOST); escalate declines the
+    // evidence and moves the case to its next stage.
+    simulateResolve(id, body) {
+      if (env !== 'sandbox') throw new Error('simulation endpoints exist only in the sandbox');
+      return call('POST', `${host.api}/api/v1/simulation/pa/payment_disputes/${encodeURIComponent(id)}/resolve`,
+        { json: body, where: `simulate resolve ${id}` });
+    },
+    simulateEscalate(id, body) {
+      if (env !== 'sandbox') throw new Error('simulation endpoints exist only in the sandbox');
+      return call('POST', `${host.api}/api/v1/simulation/pa/payment_disputes/${encodeURIComponent(id)}/escalate`,
+        { json: body, where: `simulate escalate ${id}` });
+    },
   };
 }
 

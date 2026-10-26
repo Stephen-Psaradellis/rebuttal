@@ -11,19 +11,24 @@
 // Read 2026-10-24: POST /api/v1/simulation/pa/payment_disputes/create takes
 // payment_intent_id, stage (RFI|PRE_CHARGEBACK|CHARGEBACK|PRE_ARBITRATION),
 // reason_code, due_at, amount, comment. The docs' example code is Mastercard
-// 4837 and they link a test-reason-code table we have not read, so the codes
-// below are the networks' own and the first run is the check: a refused code
-// is reported per dispute, never retried with a guess.
+// 4837; their test-reason-code link lands on dispute-response-best-practices
+// (read 2026-10-26), whose table lists Visa 10.4/10.5, 11.x, 12.1-12.7, 13.1,
+// 13.2, 13.3, 13.4, 13.6, 13.7 - duplicate is 12.6, not Visa's 12.6.1. A code
+// still refused on the first run is reported per dispute, never retried.
 
 // Visa codes, since the default test card is a Visa.
 export const REASON_CODES = {
   FRAUDULENT: '10.4',
-  DUPLICATE_CHARGE: '12.6.1',
+  DUPLICATE_CHARGE: '12.6',
   PRODUCT_NOT_RECEIVED: '13.1',
   PRODUCT_UNACCEPTABLE: '13.3',
   CREDIT_NOT_PROCESSED: '13.6',
   CANCELLED_PRODUCT: '13.7',
 };
+
+// Sub-codes the docs' table does not carry fold to their listed parent.
+const SUB_CODES = { '12.6.1': '12.6', '12.6.2': '12.6' };
+export const sandboxCode = (code) => (code && SUB_CODES[code]) || code;
 
 export const TEST_CARD = {
   number: process.env.AIRWALLEX_TEST_CARD || '4035501000000008',
@@ -40,7 +45,7 @@ export function seedPlan(disputes, store, { now = new Date(), stamp = now.getTim
   return disputes.map((d) => {
     const order = store.orders.find((o) => o.payment_intent_id === d.payment_intent_id);
     if (!order) return { fixture: d.id, error: `no store order for ${d.payment_intent_id}` };
-    const code = d.reason?.original_code || REASON_CODES[d.reason?.type];
+    const code = sandboxCode(d.reason?.original_code) || REASON_CODES[d.reason?.type];
     if (!code) return { fixture: d.id, error: `no reason code for ${d.reason?.type}` };
     return {
       fixture: d.id,
@@ -76,4 +81,24 @@ export async function seed(client, disputes, store, { now = new Date(), card = T
     }
   }
   return { disputes: made, store: mapped, report };
+}
+
+// verdicts -> report lines: after --submit, play the issuer for every disputed
+// case we challenged. MERCHANT or CUSTOMER resolves it; ESCALATE declines the
+// evidence. Accepted cases are already closed and are left alone. This is a
+// simulated outcome, never evidence the letters win real disputes.
+export async function verdicts(client, results, outcome) {
+  const report = [];
+  for (const r of results.filter((x) => x.decision.action === 'challenge')) {
+    const id = r.dispute.id;
+    try {
+      const out = outcome === 'ESCALATE'
+        ? await client.simulateEscalate(id, { comment: 'Rebuttal sandbox: issuer declines the evidence' })
+        : await client.simulateResolve(id, { in_favor_of: outcome, comment: 'Rebuttal sandbox: simulated issuer verdict' });
+      report.push(`${id}: ${outcome} -> ${out.status}${out.stage ? ` (${out.stage})` : ''}`);
+    } catch (e) {
+      report.push(`${id}: FAILED ${e.message}`);
+    }
+  }
+  return report;
 }

@@ -112,7 +112,11 @@ sandbox run, once one exists.
 ## Next
 
 Run `node src/run.js --sandbox --submit` once sandbox keys arrive and serve the
-board from it, with a live trace of every step.
+board from it, with a live trace of every step. Add `--verdict MERCHANT`
+(or `CUSTOMER`, or `ESCALATE`) to play the issuer through Airwallex's
+simulation API on every challenged case, so the board shows each dispute
+through to a WON, LOST or next-stage status. That outcome is simulated. It is
+not evidence that the letters win real disputes.
 
 ## Data
 

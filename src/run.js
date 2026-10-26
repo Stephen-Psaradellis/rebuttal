@@ -19,7 +19,7 @@ import { gather, packFor } from './evidence.js';
 import { toPng, attached } from './render.js';
 import { addLetters, completerFromEnv } from './letter.js';
 import { createClient, submitChallenge } from './client.js';
-import { seed } from './sandbox.js';
+import { seed, verdicts } from './sandbox.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
@@ -106,6 +106,14 @@ if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/run.js')) {
   await addLetters(results, { merchant: store.store?.name, complete: completerFromEnv() });
   if (client && args.includes('--submit')) {
     await submitAll(client, results, { merchant: store.store?.name, generatedAt: now.toISOString().slice(0, 10) });
+    const v = args.indexOf('--verdict');
+    if (v >= 0) {
+      const outcome = (args[v + 1] || '').toUpperCase();
+      if (!['MERCHANT', 'CUSTOMER', 'ESCALATE'].includes(outcome)) {
+        console.error('--verdict takes MERCHANT, CUSTOMER or ESCALATE'); process.exit(1);
+      }
+      for (const line of await verdicts(client, results, outcome)) console.log(`verdict  ${line}`);
+    }
   }
   if (args.includes('--json')) {
     console.log(JSON.stringify(results.map(({ dispute, decision, body, trail, letter }) => ({ id: dispute.id, decision, body, letter, trail })), null, 2));
