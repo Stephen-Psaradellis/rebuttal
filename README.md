@@ -83,6 +83,9 @@ earlier run one letter failed it and went out as the template instead.
 
 ## Demo video
 
+Watch it: https://github.com/Stephen-Psaradellis/rebuttal/releases/download/demo-video-v1/rebuttal-demo.mp4
+(about 2 minutes, fixture mode on the tea-shop data; synthetic narration).
+
 `video/` rebuilds the demo video (about 2 minutes, 1440x900) from a real run.
 Nothing on screen is mocked by the recorder:
 
