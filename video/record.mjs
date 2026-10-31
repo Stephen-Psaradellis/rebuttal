@@ -20,14 +20,32 @@ const loadPlaywright = () => {
 };
 const { chromium } = loadPlaywright();
 
-const OUT = resolve(process.argv[2] || "video/out");
+const argv = process.argv.slice(2);
+const modeAt = argv.indexOf("--mode");
+const MODE = modeAt >= 0 ? argv.splice(modeAt, 2)[1] : "demo";
+const OUT = resolve(argv[0] || "video/out");
 const NOW = process.env.REBUTTAL_NOW || "2026-10-25T00:00:00Z";
 const lengths = JSON.parse(readFileSync(join(OUT, "lengths.json"), "utf8"));
 const PAD = 0.9;
 
-const site = join(OUT, "site");
-const runOut = execFileSync(process.execPath, ["src/run.js", "--now", NOW], { encoding: "utf8", env: process.env });
-execFileSync(process.execPath, ["src/board.js", "--now", NOW, "--out", site], { encoding: "utf8", env: process.env });
+// --mode sandbox replays a finished sandbox run instead of re-running it (a re-run would seed
+// ten new disputes): the board built by `board.js --seed`, that run's saved output, and the seed
+// file's report, which maps each fixture case to the real dst_ id the board's cards carry.
+let site, runOut, cmd, ids = {};
+if (MODE === "sandbox") {
+  site = resolve(process.env.REBUTTAL_SITE || "out/sandbox-board");
+  runOut = readFileSync(resolve(process.env.REBUTTAL_RUN_LOG || "out/sandbox-run.txt"), "utf8");
+  for (const l of JSON.parse(readFileSync(resolve("out/sandbox-seed.json"), "utf8")).report) {
+    const m = l.match(/^(pd_\w+): (dst_\w+)/);
+    if (m) ids[m[1]] = m[2];
+  }
+  cmd = "node src/run.js --sandbox --paid --submit";
+} else {
+  site = join(OUT, "site");
+  runOut = execFileSync(process.execPath, ["src/run.js", "--now", NOW], { encoding: "utf8", env: process.env });
+  execFileSync(process.execPath, ["src/board.js", "--now", NOW, "--out", site], { encoding: "utf8", env: process.env });
+  cmd = `node src/run.js --now ${NOW}`;
+}
 writeFileSync(join(OUT, "run.txt"), runOut);
 const letters = (runOut.match(/^\s+letter\s+.*$/gm) || []).map((l) => l.trim());
 console.error(`prep: ${letters.length} letter lines; first: ${letters[0] || "-"}`);
@@ -43,7 +61,7 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 await page.setContent(`<!doctype html><html><body style="margin:0;background:#141413;color:#e8e6dc;font:16px/1.45 Consolas,monospace">
 <div style="padding:14px 22px;background:#262624;color:#a3a29b;font:14px system-ui">rebuttal - one pass over the open disputes</div>
 <pre id="t" style="margin:0;padding:18px 22px;height:calc(100vh - 47px);overflow:hidden;white-space:pre-wrap">
-<span style="color:#7fb0ff">$</span> node src/run.js --now ${esc(NOW)}
+<span style="color:#7fb0ff">$</span> ${esc(cmd)}
 </pre></body></html>`);
 
 const CURSOR_CSS = `#rec-cursor{position:fixed;left:0;top:0;width:22px;height:22px;margin:-4px 0 0 -4px;z-index:2147483647;pointer-events:none;
@@ -90,7 +108,7 @@ async function scrollTo(sel, block = "start") {
   await page.evaluate(([s, block]) => document.querySelector(s).scrollIntoView({ behavior: "instant", block }), [sel, block]);
   await sleep(1000);
 }
-const card = (id) => `article[id="${id}"]`;
+const card = (id) => `article[id="${ids[id] || id}"]`;
 
 const scenes = {
   async intro() { await sleep(1500); },
@@ -103,7 +121,7 @@ const scenes = {
       for (const l of lines) {
         const s = document.createElement("span");
         s.textContent = l + "\n";
-        if (/^pd_/.test(l)) s.style.color = "#f2c46d";
+        if (/^(pd|dst)_/.test(l)) s.style.color = "#f2c46d";
         else if (/^\s+decide/.test(l)) s.style.color = "#9fd49a";
         else if (/^\s+letter/.test(l)) s.style.color = "#c8a7ff";
         t.append(s); t.scrollTop = t.scrollHeight;

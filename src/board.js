@@ -57,7 +57,7 @@ export function totals(results) {
   return t;
 }
 
-function card(r, images) {
+function card(r, images, sandbox = null) {
   const { dispute: d, decision: dec, body, trail } = r;
   const ev = body?.challenge_details?.evidence || {};
   const fields = Object.entries(ev).map(([k, v]) => {
@@ -83,7 +83,7 @@ function card(r, images) {
   ${r.letter ? `<details class="letter"><summary>Rebuttal letter (${r.letter.source === 'model' ? 'model-written, fact-checked' : 'template'})</summary><pre>${esc(r.letter.text)}</pre><p class="meta">${esc(r.letter.note)}</p></details>` : ''}
   ${missing ? `<h3>Missing</h3><ul class="fields miss">${missing}</ul>` : ''}
   <details><summary>Audit trail (${trail.length} steps)</summary><ol class="trail">${steps}</ol></details>
-  ${body ? `<details><summary>Request body (dry run, not sent)</summary><pre>${esc(JSON.stringify(body, null, 2))}</pre></details>` : ''}
+  ${body ? `<details><summary>Request body (${sandbox ? 'submitted to the Airwallex sandbox' : 'dry run, not sent'})</summary><pre>${esc(JSON.stringify(body, null, 2))}</pre></details>` : ''}
 </article>`;
 }
 
@@ -128,7 +128,7 @@ ${sandbox ? `<p class="note">Airwallex sandbox: these are real sandbox disputes 
 <div class="tiles">${tally}
 <div class="tile"><b>${t.stake.toFixed(2)}</b><span>${cur} open</span></div>
 <div class="tile"><b>${t.challenged.toFixed(2)}</b><span>${cur} being fought</span></div></div>
-${order(results).map((r) => card(r, images)).join('\n')}
+${order(results).map((r) => card(r, images, sandbox)).join('\n')}
 <footer>Source: <a href="https://github.com/Stephen-Psaradellis/rebuttal">github.com/Stephen-Psaradellis/rebuttal</a> (MIT). The agent never challenges with required evidence missing, never accepts above the merchant's limit, hands arbitration stages to a person, and sends a model-written rebuttal letter only when every figure in it appears in the attached records.</footer>
 </main></body></html>
 `;

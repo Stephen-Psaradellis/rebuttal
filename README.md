@@ -90,8 +90,10 @@ earlier run one letter failed it and went out as the template instead.
 
 ## Demo video
 
-Watch it: https://github.com/Stephen-Psaradellis/rebuttal/releases/download/demo-video-v1/rebuttal-demo.mp4
-(about 2 minutes, fixture mode on the tea-shop data; synthetic narration).
+Watch it: https://github.com/Stephen-Psaradellis/rebuttal/releases/download/demo-video-v2/rebuttal-demo.mp4
+(about 2 minutes, recorded over the 2026-10-31 Airwallex sandbox run below; synthetic
+narration). The earlier fixture-mode cut is
+https://github.com/Stephen-Psaradellis/rebuttal/releases/download/demo-video-v1/rebuttal-demo.mp4.
 
 `video/` rebuilds the demo video (about 2 minutes, 1440x900) from a real run.
 Nothing on screen is mocked by the recorder:
@@ -116,8 +118,11 @@ pinned (`REBUTTAL_NOW`, default 2026-10-25) so deadlines read the same every
 run, and nothing is sent to Airwallex: it is a dry run. The current cut used
 Gemma 4 E4B on local Ollama (`LLM_BASE_URL=http://localhost:11434/v1
 LLM_MODEL=gemma4:e4b LLM_API_KEY=ollama`); 5 of 5 letters passed the check.
-`--mode sandbox` (narrate.py and mux.py) switches to the narration lines for a
-sandbox run, once one exists.
+`--mode sandbox` (all three scripts) records the sandbox cut instead. The
+recorder does not re-run anything there, because a re-run would seed ten new
+disputes: it drives the board from `board.js --seed` (`out/sandbox-board`),
+prints the saved output of the `--submit` run (`out/sandbox-run.txt`), and maps
+each scene's fixture case to its real `dst_` id through the seed file's report.
 
 ## Sandbox run
 
@@ -144,10 +149,6 @@ AI Dispute Automation; `client.toWire` converts), challenge evidence must be PDF
 upload names over 50 characters must keep their extension, and the simulator
 will not open a dispute at PRE_ARBITRATION (that fixture opens as a CHARGEBACK
 and the seed log says so).
-
-## Next
-
-Recut the video with `--mode sandbox` over the sandbox board.
 
 ## Data
 
