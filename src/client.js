@@ -30,6 +30,14 @@ export class AirwallexError extends Error {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const clip50 = (s) => String(s).slice(0, 50);
+// A file name is clipped from the middle: the Files API checks the extension
+// (invalid_file_extension, measured 2026-10-31 on a 54-char evidence name).
+const clipName = (s) => {
+  const name = String(s);
+  const dot = name.lastIndexOf('.');
+  const ext = dot > 0 && name.length - dot <= 6 ? name.slice(dot) : '';
+  return name.length <= 50 ? name : name.slice(0, 50 - ext.length) + ext;
+};
 
 export function createClient({ clientId, apiKey, env = 'sandbox', fetch = globalThis.fetch,
   now = () => Date.now(), wait = sleep, maxRetries = 2 } = {}) {
@@ -104,7 +112,7 @@ export function createClient({ clientId, apiKey, env = 'sandbox', fetch = global
       if (bytes.length > MAX_UPLOAD) throw new Error(`${name} is ${bytes.length} bytes, over the 20MB upload limit`);
       const form = () => {
         const fd = new FormData();
-        fd.append('file', new Blob([bytes], { type: name.endsWith('.png') ? 'image/png' : 'application/octet-stream' }), clip50(name));
+        fd.append('file', new Blob([bytes], { type: name.endsWith('.png') ? 'image/png' : name.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream' }), clipName(name));
         if (notes) fd.append('notes', clip50(notes));
         return fd;
       };
@@ -121,6 +129,8 @@ export function createClient({ clientId, apiKey, env = 'sandbox', fetch = global
     // used by src/sandbox.js to make real disputes to answer.
     createPaymentIntent: (body) => call('POST', `${host.api}/api/v1/pa/payment_intents/create`,
       { json: body, where: `create payment ${body.merchant_order_id}` }),
+    getPaymentIntent: (id) => call('GET', `${host.api}/api/v1/pa/payment_intents/${encodeURIComponent(id)}`,
+      { where: `get payment ${id}` }),
     confirmPaymentIntent: (id, body) => call('POST', `${host.api}/api/v1/pa/payment_intents/${encodeURIComponent(id)}/confirm`,
       { json: body, where: `confirm ${id}` }),
     simulateDispute(body) {
@@ -161,10 +171,52 @@ export function swapFileIds(body, uploaded) {
   return { ...body, challenge_details: { ...body.challenge_details, evidence } };
 }
 
+// Which documents[].type each evidence file field becomes. PRIMARY is the proof
+// the challenge reason rests on, ORDER the purchase itself, CUSTOMER what the
+// cardholder said or agreed to.
+const DOC_TYPES = {
+  order_fulfillment_file_ids: 'PRIMARY', product_consumption_file_ids: 'PRIMARY',
+  authenticity_proof_file_ids: 'PRIMARY', duplicate_payment_file_ids: 'PRIMARY', access_activity_file_ids: 'PRIMARY',
+  order_snapshot_file_ids: 'ORDER', product_snapshot_file_ids: 'ORDER',
+  previous_purchase_similar_product_file_ids: 'ORDER', previous_dispute_won_on_same_card_file_ids: 'ORDER',
+  customer_communication_file_ids: 'CUSTOMER', user_agreement_file_ids: 'CUSTOMER',
+  refund_policy_file_ids: 'OTHER',
+};
+
+// toWire -> the body the challenge endpoint takes. Our internal body nests
+// everything under challenge_details.evidence; that `evidence` object is only
+// read with challenge_method AI_DISPUTE_AUTOMATION. A STANDARD challenge is flat
+// (reason, stage, product_type, delivery_info, supporting_documents.documents),
+// and without product_type the API refuses it ("Valid product_type must be
+// provided", measured 2026-10-31; raw/airwallex-api-payment-disputes-challenge-20261031.md).
+export function toWire(body, letter = '') {
+  const { reason, stage, product_type: productType, evidence = {} } = body.challenge_details;
+  const notes = [];
+  const documents = [];
+  for (const [k, v] of Object.entries(evidence)) {
+    if (Array.isArray(v)) {
+      documents.push({ type: DOC_TYPES[k] || 'OTHER', description: k.replace(/_file_ids$/, '').replace(/_/g, ' '), file_ids: v });
+    } else if (k !== 'order_fulfilled_at' && k !== 'product_description') {
+      notes.push(`${k.replace(/_/g, ' ')}: ${v}`);
+    }
+  }
+  const out = { request_id: body.request_id, challenge_method: 'STANDARD', reason, stage };
+  if (productType) out.product_type = productType;
+  if (evidence.product_description) out.product_description = evidence.product_description;
+  if (evidence.order_fulfilled_at) {
+    const at = String(evidence.order_fulfilled_at);
+    out.delivery_info = { delivered_at: at.length === 10 ? `${at}T00:00:00Z` : at };
+  }
+  const description = [letter, ...notes].filter(Boolean).join('\n\n');
+  if (description) out.description = description;
+  if (documents.length) out.supporting_documents = { documents };
+  return out;
+}
+
 // Upload each rendered page, swap the ids in, post the challenge. `pages` is
-// { docId: [{ name, bytes }] } from render.toPng. Returns the upload map and
-// Airwallex's reply so the audit trail can name every file it sent.
-export async function submitChallenge(client, disputeId, body, pages) {
+// { docId: [{ name, bytes }] } from render.toPng. Returns the upload map, the
+// body as sent and Airwallex's reply so the audit trail can name every file.
+export async function submitChallenge(client, disputeId, body, pages, { letter = '' } = {}) {
   const uploaded = {};
   for (const [docId, list] of Object.entries(pages)) {
     uploaded[docId] = [];
@@ -173,7 +225,7 @@ export async function submitChallenge(client, disputeId, body, pages) {
       uploaded[docId].push(r.file_id);
     }
   }
-  const final = swapFileIds(body, uploaded);
+  const final = toWire(swapFileIds(body, uploaded), letter);
   const reply = await client.challenge(disputeId, final);
   return { uploaded, body: final, reply };
 }

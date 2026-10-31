@@ -16,10 +16,10 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { decide, challengeBody, acceptBody, DEFAULT_POLICY } from './rules.js';
 import { gather, packFor } from './evidence.js';
-import { toPng, attached } from './render.js';
+import { toPng, toPdf, attached } from './render.js';
 import { addLetters, completerFromEnv } from './letter.js';
 import { createClient, submitChallenge } from './client.js';
-import { seed, verdicts } from './sandbox.js';
+import { seed, verdicts, createIntents, payPage } from './sandbox.js';
 
 const load = (name) => JSON.parse(readFileSync(new URL(`../fixtures/${name}`, import.meta.url), 'utf8'));
 
@@ -39,7 +39,8 @@ export function processAll(disputes, store, { now = new Date(), policy = DEFAULT
     let body = null;
     const requestId = `rebuttal-${dispute.id}-${now.toISOString().slice(0, 10)}`;
     if (decision.action === 'CHALLENGE') {
-      body = challengeBody(dispute, decision, packFor(decision, gathered.evidence), requestId);
+      body = challengeBody(dispute, decision, packFor(decision, gathered.evidence), requestId,
+        store.store?.product_type);
       log('submit', `dry run: POST /api/v1/pa/payment_disputes/${dispute.id}/challenge with `
         + `${Object.keys(body.challenge_details.evidence).length} evidence field(s)`);
     } else if (decision.action === 'ACCEPT') {
@@ -70,9 +71,9 @@ async function submitAll(client, results, meta) {
       if (x.decision.action === 'CHALLENGE') {
         const pages = {};
         for (const doc of attached(x.gathered.documents, x.body.challenge_details.evidence)) {
-          pages[doc.id] = await toPng(doc, { ...meta, disputeId: x.dispute.id });
+          pages[doc.id] = toPdf(doc, { ...meta, disputeId: x.dispute.id });
         }
-        const r = await submitChallenge(client, x.dispute.id, x.body, pages);
+        const r = await submitChallenge(client, x.dispute.id, x.body, pages, { letter: x.letter?.text });
         x.trail.push({ step: 'submit', detail: `sent: ${Object.values(r.uploaded).flat().length} file(s) uploaded, `
           + `dispute now ${r.reply.status || '?'}` });
       } else if (x.decision.action === 'ACCEPT') {
@@ -95,7 +96,17 @@ if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/run.js')) {
   if (args.includes('--sandbox')) {
     loadEnv();
     client = createClient({ clientId: process.env.AIRWALLEX_CLIENT_ID, apiKey: process.env.AIRWALLEX_API_KEY });
-    const s = await seed(client, disputes, store, { now });
+    mkdirSync('out', { recursive: true });
+    if (args.includes('--intents')) {
+      // Accounts without native card API: make the intents, pay them in out/pay.html, then --paid.
+      const made = await createIntents(client, disputes, store, { now });
+      writeFileSync('out/intents.json', JSON.stringify(made, null, 2));
+      writeFileSync('out/pay.html', payPage(made));
+      console.log(`${made.length} intents -> out/intents.json; pay each at out/pay.html?i=0.., then --sandbox --paid`);
+      process.exit(0);
+    }
+    const intents = args.includes('--paid') ? JSON.parse(readFileSync('out/intents.json', 'utf8')) : null;
+    const s = await seed(client, disputes, store, { now, intents });
     for (const line of s.report) console.log(`seed     ${line}`);
     if (!s.disputes.length) { console.error('no sandbox disputes were created'); process.exit(1); }
     ({ disputes, store } = s);

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createClient, swapFileIds, submitChallenge, AirwallexError } from '../src/client.js';
+import { createClient, swapFileIds, submitChallenge, toWire, AirwallexError } from '../src/client.js';
 
 // A fake Airwallex: records every request, answers from `routes`.
 function fake(routes) {
@@ -99,6 +99,7 @@ test('uploadFile goes to the files host as multipart with names clipped to 50', 
   assert.equal(up.host, 'files.sandbox.airwallex.com');
   assert.ok(up.body instanceof FormData);
   assert.equal(up.body.get('file').name.length, 50);
+  assert.ok(up.body.get('file').name.endsWith('.png'), 'the extension survives the clip');
   assert.equal(up.body.get('notes').length, 50);
   await assert.rejects(createClient(opts(f)).uploadFile('big.png', { length: 21 * 1024 * 1024 }), /20MB/);
 });
@@ -128,8 +129,25 @@ test('submitChallenge uploads every page, then posts the swapped body', async ()
     { doc_scan: [png('doc_scan_p1.png'), png('doc_scan_p2.png')], doc_mail: [png('doc_mail.png')] });
   assert.deepEqual(r.uploaded, { doc_scan: ['f1', 'f2'], doc_mail: ['f3'] });
   assert.equal(r.reply.status, 'CHALLENGED');
-  assert.deepEqual(r.reply.echo.challenge_details.evidence.order_fulfillment_file_ids, ['f1', 'f2']);
+  const sent = r.reply.echo;
+  assert.equal(sent.challenge_details, undefined, 'a STANDARD challenge is flat');
+  assert.deepEqual([sent.reason, sent.stage, sent.challenge_method], ['PRODUCT_RECEIVED', 'CHARGEBACK', 'STANDARD']);
+  assert.deepEqual(sent.supporting_documents.documents.find((d) => d.type === 'PRIMARY').file_ids, ['f1', 'f2']);
+  assert.deepEqual(sent.supporting_documents.documents.find((d) => d.type === 'CUSTOMER').file_ids, ['f3', 'f1', 'f2']);
+  assert.match(sent.description, /merchant business model description: Tea\./);
   const post = f.calls.at(-1);
   assert.equal(post.headers['content-type'], 'application/json');
   assert.equal(f.calls.filter((c) => c.path === '/api/v1/files/upload').length, 3);
+});
+
+test('toWire puts product_type, delivery date and the letter where a STANDARD challenge reads them', () => {
+  const body = { request_id: 'r2', challenge_method: 'STANDARD', challenge_details: { reason: 'PRODUCT_RECEIVED',
+    stage: 'CHARGEBACK', product_type: 'PHYSICAL_GOODS',
+    evidence: { order_fulfilled_at: '2026-09-03', product_description: 'Teapot', refund_policy_file_ids: ['f9'] } } };
+  const w = toWire(body, 'Dear reviewer');
+  assert.equal(w.product_type, 'PHYSICAL_GOODS');
+  assert.equal(w.product_description, 'Teapot');
+  assert.deepEqual(w.delivery_info, { delivered_at: '2026-09-03T00:00:00Z' });
+  assert.equal(w.description, 'Dear reviewer');
+  assert.deepEqual(w.supporting_documents.documents, [{ type: 'OTHER', description: 'refund policy', file_ids: ['f9'] }]);
 });

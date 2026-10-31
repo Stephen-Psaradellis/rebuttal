@@ -58,8 +58,20 @@ test('seeded disputes decide exactly as the fixtures do', async () => {
   assert.ok(calls.filter((c) => c.path.endsWith('/confirm')).every((c) => c.body.payment_method.type === 'card'));
   const tally = (rs) => rs.map((r) => r.decision.action).sort().join();
   const fixtureNow = new Date('2026-10-25T00:00:00Z');
+  // The simulator cannot open a PRE_ARBITRATION case, so that fixture is
+  // compared as the CHARGEBACK it is seeded as.
+  const asSeeded = load('disputes.json').map((d) => (d.stage === 'PRE_ARBITRATION' ? { ...d, stage: 'CHARGEBACK' } : d));
   assert.equal(tally(processAll(s.disputes, s.store, { now: NOW })),
-    tally(processAll(load('disputes.json'), load('store.json'), { now: fixtureNow })));
+    tally(processAll(asSeeded, load('store.json'), { now: fixtureNow })));
+});
+
+test('a PRE_ARBITRATION fixture opens as a CHARGEBACK and the report says so', async () => {
+  const { client, calls } = fakeSandbox();
+  const s = await seed(client, load('disputes.json'), load('store.json'), { now: NOW });
+  const made = calls.filter((c) => c.path === '/api/v1/simulation/pa/payment_disputes/create');
+  assert.ok(made.every((c) => c.body.stage !== 'PRE_ARBITRATION'));
+  const pre = load('disputes.json').filter((d) => d.stage === 'PRE_ARBITRATION').length;
+  assert.equal(s.report.filter((l) => l.includes('the simulator refuses PRE_ARBITRATION')).length, pre);
 });
 
 test('a refused reason code is reported per dispute, the rest still seed', async () => {
@@ -78,11 +90,15 @@ test('simulation is refused outside the sandbox', () => {
 test('verdicts play the issuer for challenged cases only', async () => {
   const { client, calls } = fakeSandbox();
   const results = [
-    { dispute: { id: 'pd_a' }, decision: { action: 'challenge' } },
-    { dispute: { id: 'pd_b' }, decision: { action: 'accept' } },
-    { dispute: { id: 'pd_c' }, decision: { action: 'challenge' } },
+    { dispute: { id: 'pd_a' }, decision: { action: 'CHALLENGE' } },
+    { dispute: { id: 'pd_b' }, decision: { action: 'ACCEPT' } },
+    { dispute: { id: 'pd_c' }, decision: { action: 'CHALLENGE' } },
   ];
   assert.deepEqual(await verdicts(client, results, 'MERCHANT'), ['pd_a: MERCHANT -> WON', 'pd_c: MERCHANT -> WON']);
+  // the action names processAll really produces, not a hand-written spelling
+  const real = processAll(load('disputes.json'), load('store.json'), { now: new Date('2026-10-25T00:00:00Z') });
+  assert.equal((await verdicts(fakeSandbox().client, real, 'MERCHANT')).length, real.filter((r) => r.decision.action === 'CHALLENGE').length);
+  assert.ok(real.some((r) => r.decision.action === 'CHALLENGE'));
   assert.deepEqual(calls.filter((c) => c.path.includes('/resolve')).map((c) => c.body.in_favor_of), ['MERCHANT', 'MERCHANT']);
   const esc = await verdicts(client, results, 'ESCALATE');
   assert.equal(esc[0], 'pd_a: ESCALATE -> REQUIRES_RESPONSE (PRE_ARBITRATION)');

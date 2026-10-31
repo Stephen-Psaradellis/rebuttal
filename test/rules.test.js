@@ -78,11 +78,14 @@ test('urgent flag inside 48h of due_at', () => {
 test('challenge body carries only valid evidence and the stage', () => {
   const d = dispute();
   const dec = decide(d, { ...DELIVERED, product_description: '' }, {}, NOW);
-  const body = challengeBody(d, dec, { ...DELIVERED, product_description: '' }, 'req-1');
-  assert.deepEqual(body.challenge_details, { reason: 'PRODUCT_RECEIVED', stage: 'CHARGEBACK', evidence: DELIVERED });
-  assert.throws(() => challengeBody(d, dec, { tracking_photo: ['x'] }, 'req-1'), /unknown evidence field/);
-  assert.throws(() => challengeBody(d, dec, { order_fulfillment_file_ids: 'x' }, 'req-1'), /array of file ids/);
-  assert.throws(() => challengeBody(d, dec, DELIVERED, ''), /request_id/);
+  const body = challengeBody(d, dec, { ...DELIVERED, product_description: '' }, 'req-1', 'PHYSICAL_GOODS');
+  assert.deepEqual(body.challenge_details, { reason: 'PRODUCT_RECEIVED', stage: 'CHARGEBACK',
+    product_type: 'PHYSICAL_GOODS', evidence: DELIVERED });
+  assert.throws(() => challengeBody(d, dec, DELIVERED, 'req-1'), /product_type is required/);
+  assert.throws(() => challengeBody(d, dec, DELIVERED, 'req-1', 'TEA'), /bad product_type/);
+  assert.throws(() => challengeBody(d, dec, { tracking_photo: ['x'] }, 'req-1', 'PHYSICAL_GOODS'), /unknown evidence field/);
+  assert.throws(() => challengeBody(d, dec, { order_fulfillment_file_ids: 'x' }, 'req-1', 'PHYSICAL_GOODS'), /array of file ids/);
+  assert.throws(() => challengeBody(d, dec, DELIVERED, '', 'PHYSICAL_GOODS'), /request_id/);
 });
 
 test('accept body: valid reason, explicit refund at RFI only', () => {

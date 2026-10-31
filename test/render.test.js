@@ -48,3 +48,21 @@ test('only documents named in the packed challenge are attached', () => {
     assert.ok(docs.length <= r.gathered.documents.length);
   }
 });
+
+test('toPdf writes one parseable multi-page PDF per document', async () => {
+  const { toPdf } = await import('../src/render.js');
+  const doc = { id: 'doc_x', title: 'Order (KK-1)', field: 'order_snapshot_file_ids',
+    lines: Array.from({ length: 80 }, (_, i) => `Line ${i} caf\u00e9 \u2192 back${String.fromCharCode(92)}slash`) };
+  const [pdf] = toPdf(doc, { disputeId: 'dst_1', merchant: 'Kettle', generatedAt: '2026-10-31' });
+  const s = Buffer.from(pdf.bytes).toString('latin1');
+  assert.equal(pdf.name, 'doc_x.pdf');
+  assert.ok(s.startsWith('%PDF-1.4') && s.trimEnd().endsWith('%%EOF'));
+  assert.equal(pdf.page, paginate(doc).length);
+  assert.match(s, new RegExp(`/Count ${paginate(doc).length}`));
+  const bs = String.fromCharCode(92);
+  assert.ok(s.includes(`Order ${bs}(KK-1${bs})`), 'parentheses escaped');
+  assert.ok(s.includes(`back${bs}${bs}slash`), 'backslash escaped');
+  assert.ok(s.includes('caf\u00e9 ?'), 'Latin-1 kept, the rest replaced');
+  const xref = Number(s.match(/startxref\n(\d+)/)[1]);
+  assert.ok(s.slice(xref).startsWith('xref'), 'startxref points at the xref table');
+});

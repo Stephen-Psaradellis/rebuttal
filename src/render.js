@@ -92,6 +92,58 @@ export async function toPng(doc, meta, page = PAGE) {
   return out;
 }
 
+// toPdf(doc, meta) -> [{ name, bytes, page }] - the same page as toSvg, laid out
+// as text in one multi-page PDF. The challenge endpoint refuses PNG evidence
+// ("File type png is not supported", measured 2026-10-31) although the File
+// Service stores it, so submissions send this; the PNGs stay for the board.
+// No dependencies: base-14 Helvetica, WinAnsi, anything outside Latin-1 -> '?'.
+export function toPdf(doc, meta, page = PAGE) {
+  const k = 595.28 / page.width; // A4 points per page pixel
+  const H = page.height * k;
+  const pdfText = (s) => String(s).replace(/[^\x20-\xff]/g, '?').replace(/[\\()]/g, (c) => `\\${c}`);
+  const t = (x, y, size, s, { bold = false, grey = false } = {}) =>
+    `${grey ? '0.33 g' : '0.07 g'} BT /${bold ? 'F2' : 'F1'} ${(size * k).toFixed(2)} Tf ${(x * k).toFixed(2)} ${(H - y * k).toFixed(2)} Td (${pdfText(s)}) Tj ET`;
+  const ln = (y) => `0.8 G 1 w ${(page.margin * k).toFixed(2)} ${(H - y * k).toFixed(2)} m ${((page.width - page.margin) * k).toFixed(2)} ${(H - y * k).toFixed(2)} l S`;
+  const pages = paginate(doc, page);
+  const { margin: m, font, lineHeight } = page;
+  const streams = pages.map((lines, p) => {
+    const of = pages.length > 1 ? ` - page ${p + 1} of ${pages.length}` : '';
+    return [
+      t(m, m + 20, 22, `${meta.merchant || 'Merchant'} - evidence for dispute ${meta.disputeId}`, { grey: true }),
+      t(m, m + 90, 40, doc.title, { bold: true }),
+      t(m, m + 140, 22, `Field: ${doc.field}${of}`, { grey: true }),
+      ln(m + 170),
+      ...lines.map((l, i) => t(m, m + 230 + i * lineHeight, font, l)),
+      ln(page.height - m - 40),
+      t(m, page.height - m, 20, `Copied from the merchant's own records (orders, carrier scans, emails, logins, policy). Prepared ${meta.generatedAt || ''}.`, { grey: true }),
+    ].join('\n');
+  });
+  // objects: 1 catalog, 2 pages, 3 F1, 4 F2, then page/content pairs
+  const objs = [];
+  const kids = streams.map((_, i) => `${5 + 2 * i} 0 R`).join(' ');
+  objs.push('<< /Type /Catalog /Pages 2 0 R >>');
+  objs.push(`<< /Type /Pages /Kids [${kids}] /Count ${streams.length} >>`);
+  objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+  objs.push('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+  for (const [i, s] of streams.entries()) {
+    objs.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 ${H.toFixed(2)}] `
+      + `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6 + 2 * i} 0 R >>`);
+    objs.push(`<< /Length ${Buffer.byteLength(s, 'latin1')} >>\nstream\n${s}\nendstream`);
+  }
+  let out = '%PDF-1.4\n';
+  const offsets = objs.map((o, i) => {
+    const at = Buffer.byteLength(out, 'latin1');
+    out += `${i + 1} 0 obj\n${o}\nendobj\n`;
+    return at;
+  });
+  const xref = Buffer.byteLength(out, 'latin1');
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n${offsets.map((o) => `${String(o).padStart(10, '0')} 00000 n \n`).join('')}`;
+  out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  const bytes = new Uint8Array(Buffer.from(out, 'latin1'));
+  if (bytes.length > MAX_BYTES) throw new Error(`${doc.id} is ${bytes.length} bytes, over the 10MB limit`);
+  return [{ name: `${doc.id}.pdf`, bytes, page: pages.length }];
+}
+
 // The documents a challenge actually attaches: those whose ids the packed
 // evidence names. Uploading the rest would hand a reviewer noise.
 export function attached(documents, packed) {

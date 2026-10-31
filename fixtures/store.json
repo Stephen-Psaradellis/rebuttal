@@ -2,6 +2,7 @@
   "_note": "Fictional demo store. Every name, address, email and IP is invented; no real customer data.",
   "store": {
     "name": "Kettle & Kiln (demo store)",
+    "product_type": "PHYSICAL_GOODS",
     "business_model": "Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.",
     "refund_policy_url": "https://kettle-and-kiln.example/policies/refunds",
     "refund_policy": "Unopened items may be returned within 30 days of delivery for a full refund. Orders can be cancelled until they ship; after that, use a return. Damaged items are replaced or refunded on a photo.",

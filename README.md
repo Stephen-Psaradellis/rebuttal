@@ -30,11 +30,13 @@ deadline; the letter is written last, and only from what was found.
 - `src/run.js` - one pass over the open disputes with an audit trail. Each
   POST body is built and validated, then **not sent** (dry run) until it runs
   with sandbox keys.
-- `src/render.js` - evidence documents to images. Airwallex takes evidence
-  files as JPG/PNG/WEBP up to 10MB, so each document becomes a plain page
-  (dispute, field, the record's own lines, where they came from) rendered to
-  PNG with resvg; long ones split into pages rather than shrink. Only the
-  documents the challenge actually names are rendered.
+- `src/render.js` - evidence documents to pages. Each document becomes a plain
+  page (dispute, field, the record's own lines, where they came from); long ones
+  split into pages rather than shrink. `toPdf` writes the multi-page PDF a
+  challenge sends (no dependencies) - the File Service stores PNGs, but the
+  challenge endpoint refuses them (measured in the sandbox 2026-10-31). `toPng`
+  (resvg) draws the same page for the board and the video. Only the documents
+  the challenge actually names are rendered.
 - `src/client.js` - the Airwallex client: login with a 30-minute token reused
   until it expires, dispute list (follows `page_after`) and get, File Service
   upload to the `files.` host, challenge and accept. Re-logs in on
@@ -112,14 +114,36 @@ LLM_MODEL=gemma4:e4b LLM_API_KEY=ollama`); 5 of 5 letters passed the check.
 `--mode sandbox` (narrate.py and mux.py) switches to the narration lines for a
 sandbox run, once one exists.
 
+## Sandbox run
+
+Run on 2026-10-31 against the Airwallex sandbox:
+
+```
+node src/run.js --sandbox --intents            # 10 PaymentIntents, one per fixture case
+python -m http.server 8793 --directory out     # serves out/pay.html
+node src/paybot.mjs                            # pays each with a sandbox test card in Airwallex's card element
+LLM_REASONING_EFFORT=none node src/run.js --sandbox --paid --submit --verdict MERCHANT
+```
+
+10 disputes seeded on 10 paid card payments; 6 challenged (each accepted by the
+API as CHALLENGED, 3-5 PDF evidence files per case), 2 accepted, 1 held for
+escalation, 1 left alone as past its deadline. All 6 letters were written by
+Gemma 4 E4B and passed the fact check (`LLM_REASONING_EFFORT=none` stops it
+spending its token budget thinking). Played as the issuer, all 6 challenged
+cases came back WON. That outcome is simulated. It is not evidence that the
+letters win real disputes.
+
+Four things the sandbox caught that the fixtures could not: a STANDARD challenge
+is a flat body with `product_type` (the nested `evidence` object is only read by
+AI Dispute Automation; `client.toWire` converts), challenge evidence must be PDF,
+upload names over 50 characters must keep their extension, and the simulator
+will not open a dispute at PRE_ARBITRATION (that fixture opens as a CHARGEBACK
+and the seed log says so).
+
 ## Next
 
-Run `node src/run.js --sandbox --submit` once sandbox keys arrive and serve the
-board from it, with a live trace of every step. Add `--verdict MERCHANT`
-(or `CUSTOMER`, or `ESCALATE`) to play the issuer through Airwallex's
-simulation API on every challenged case, so the board shows each dispute
-through to a WON, LOST or next-stage status. That outcome is simulated. It is
-not evidence that the letters win real disputes.
+Serve the board from the sandbox run with a live trace of every step, and recut
+the video with `--mode sandbox`.
 
 ## Data
 

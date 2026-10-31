@@ -170,8 +170,15 @@ export function decide(dispute, evidence = {}, policy = DEFAULT_POLICY, now = ne
 }
 
 // Build and check the POST bodies. Throws on anything Airwallex would reject.
-export function challengeBody(dispute, decision, evidence, requestId) {
+// The API refuses a CHARGEBACK challenge without one of these
+// ("Valid product_type must be provided", measured 2026-10-31).
+export const PRODUCT_TYPES = ['PHYSICAL_GOODS', 'DIGITAL_PRODUCT_OR_SERVICE', 'OFFLINE_SERVICE', 'TRAVEL',
+  'RESERVE_OR_BOOKING', 'OTHERS'];
+
+export function challengeBody(dispute, decision, evidence, requestId, productType) {
   if (decision.action !== 'CHALLENGE') throw new Error('not a challenge decision');
+  if (productType !== undefined && !PRODUCT_TYPES.includes(productType)) throw new Error(`bad product_type ${productType}`);
+  if (dispute.stage === 'CHARGEBACK' && !productType) throw new Error('product_type is required at CHARGEBACK');
   if (!CHALLENGE_REASONS.includes(decision.reason)) throw new Error(`bad challenge reason ${decision.reason}`);
   if (!CHALLENGE_STAGES.includes(dispute.stage)) throw new Error(`stage ${dispute.stage} cannot be challenged`);
   if (!requestId) throw new Error('request_id is required');
@@ -185,7 +192,8 @@ export function challengeBody(dispute, decision, evidence, requestId) {
     if (present(evidence, k)) ev[k] = v;
   }
   return { request_id: requestId, challenge_method: 'STANDARD',
-    challenge_details: { reason: decision.reason, stage: dispute.stage, evidence: ev } };
+    challenge_details: { reason: decision.reason, stage: dispute.stage,
+      ...(productType ? { product_type: productType } : {}), evidence: ev } };
 }
 
 export function acceptBody(dispute, decision, requestId, acceptedBy = 'rebuttal-agent') {
