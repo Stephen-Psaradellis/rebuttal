@@ -1,6 +1,7 @@
 // Rebuttal - the merchant's case board.
 //
 //   node src/board.js [--now 2026-10-25T00:00:00Z] [--out site/]
+//   node src/board.js --seed out/sandbox-seed.json   the real sandbox disputes of a --paid run
 //
 // One static page over a pass of processAll(): every open dispute as a card,
 // cases that need the merchant first, then by deadline. Each card says what the
@@ -16,6 +17,7 @@ import { join } from 'node:path';
 import { processAll } from './run.js';
 import { toPng, attached } from './render.js';
 import { addLetters, completerFromEnv } from './letter.js';
+import { fromSeed } from './sandbox.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -86,7 +88,7 @@ function card(r, images) {
 }
 
 // images: { doc_id: ['evidence/doc_x.png', ...] } - pages already written.
-export function boardHtml(results, { merchant = 'Demo store', generatedAt = '', demo = true, images = {} } = {}) {
+export function boardHtml(results, { merchant = 'Demo store', generatedAt = '', demo = true, images = {}, sandbox = null } = {}) {
   const t = totals(results);
   const cur = esc(results[0]?.dispute.currency || '');
   const tally = ['ESCALATE', 'CHALLENGE', 'ACCEPT', 'NONE']
@@ -122,7 +124,7 @@ footer{color:var(--mute);font-size:.85rem;margin-top:28px}
 </style></head><body><main>
 <h1>Rebuttal case board</h1>
 <p class="sub">${esc(merchant)} &middot; ${results.length} disputes &middot; run ${esc(generatedAt)}</p>
-${demo ? `<p class="note">Demo data: a fictional store and ten disputes in Airwallex's payment_disputes shape. This is a dry run - every request body below is built and checked but nothing is sent. Built by an AI agent (Claude) for the Airwallex Agentic Banking hackathon.</p>` : ''}
+${sandbox ? `<p class="note">Airwallex sandbox: these are real sandbox disputes (dst_ ids), simulated on test-card payments at ${esc(sandbox)} over a fictional store. The board shows what the agent decided before submitting; <code>node src/run.js --sandbox --paid --submit</code> then sent each body to the sandbox. Built by an AI agent (Claude) for the Airwallex Agentic Banking hackathon.</p>` : demo ? `<p class="note">Demo data: a fictional store and ten disputes in Airwallex's payment_disputes shape. This is a dry run - every request body below is built and checked but nothing is sent. Built by an AI agent (Claude) for the Airwallex Agentic Banking hackathon.</p>` : ''}
 <div class="tiles">${tally}
 <div class="tile"><b>${t.stake.toFixed(2)}</b><span>${cur} open</span></div>
 <div class="tile"><b>${t.challenged.toFixed(2)}</b><span>${cur} being fought</span></div></div>
@@ -138,8 +140,16 @@ if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/board.js')) {
   const arg = (k, dflt) => (args.indexOf(k) >= 0 ? args[args.indexOf(k) + 1] : dflt);
   const now = new Date(arg('--now', new Date().toISOString()));
   const outDir = arg('--out', 'site');
-  const store = load('store.json');
-  const results = processAll(load('disputes.json'), store, { now });
+  const seedPath = arg('--seed', null);
+  let seededAt = null;
+  let disputes = load('disputes.json');
+  let store = load('store.json');
+  if (seedPath) {
+    const seedFile = JSON.parse(readFileSync(seedPath, 'utf8'));
+    seededAt = seedFile.at;
+    ({ disputes, store } = fromSeed(seedFile, JSON.parse(readFileSync(arg('--intents', 'out/intents.json'), 'utf8')), store));
+  }
+  const results = processAll(disputes, store, { now });
   await addLetters(results, { merchant: store.store?.name, complete: completerFromEnv() });
   const meta = { merchant: store.store?.name, generatedAt: now.toISOString().slice(0, 10) };
   mkdirSync(join(outDir, 'evidence'), { recursive: true });
@@ -152,6 +162,6 @@ if (process.argv[1]?.replace(/\\/g, '/').endsWith('src/board.js')) {
       }
     }
   }
-  writeFileSync(join(outDir, 'index.html'), boardHtml(results, { ...meta, images }));
+  writeFileSync(join(outDir, 'index.html'), boardHtml(results, { ...meta, images, sandbox: seededAt }));
   console.log(`board: ${outDir}/index.html, ${Object.values(images).flat().length} evidence page(s)`);
 }

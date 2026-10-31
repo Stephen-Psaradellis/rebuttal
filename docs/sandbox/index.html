@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rebuttal case board</title>
+<meta name="description" content="Dispute Response Agent for Airwallex: every open dispute, what the agent decided, and the evidence behind it.">
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1d1d1b;--mute:#5f5f5a;--line:#e3e2dd;--esc:#b4232a;--chal:#1f5fbf;--acc:#5f6b2b;--none:#7a7a74;--hot:#b4232a}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#21211f;--ink:#ecebe6;--mute:#a3a29b;--line:#34332f;--esc:#f0767b;--chal:#7fb0ff;--acc:#b9c77a;--none:#9a9992;--hot:#f0767b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}.sub{color:var(--mute);margin:0 0 18px}
+.note{border:1px solid var(--line);background:var(--card);padding:10px 14px;border-radius:8px;color:var(--mute);font-size:.9rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:18px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile b{display:block;font-size:1.4rem}.tile span{color:var(--mute);font-size:.85rem}
+.case{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--none);border-radius:8px;padding:14px 16px;margin:12px 0}
+.a-ESCALATE{border-left-color:var(--esc)}.a-CHALLENGE{border-left-color:var(--chal)}.a-ACCEPT{border-left-color:var(--acc)}
+.case header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+.a-ESCALATE .badge{color:var(--esc)}.a-CHALLENGE .badge{color:var(--chal)}.a-ACCEPT .badge{color:var(--acc)}.a-NONE .badge{color:var(--none)}
+.badge.hot{color:var(--hot)!important}.amt{margin-left:auto;font-weight:600}
+h2{font-size:1.05rem;margin:8px 0 2px}h2 small{color:var(--mute);font-weight:400}
+h3{font-size:.85rem;margin:12px 0 4px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+.meta{color:var(--mute);margin:0;font-size:.88rem}.why{margin:8px 0 0}.reason{color:var(--mute)}
+.fields{list-style:none;margin:0;padding:0}.fields li{display:flex;gap:10px;flex-wrap:wrap;padding:3px 0;border-top:1px solid var(--line)}
+.fields code{min-width:min(260px,100%);color:var(--mute)}.fields span{overflow-wrap:anywhere}.miss code{color:var(--esc)}
+a{color:var(--chal)}details{margin-top:10px}summary{cursor:pointer;color:var(--mute)}
+.trail{margin:6px 0 0;padding-left:20px;font-size:.88rem}details.letter pre{white-space:pre-wrap;font-family:inherit;font-size:.9rem}pre{overflow:auto;background:var(--bg);padding:10px;border-radius:6px;font-size:.8rem;max-width:100%}
+footer{color:var(--mute);font-size:.85rem;margin-top:28px}
+</style></head><body><main>
+<h1>Rebuttal case board</h1>
+<p class="sub">Kettle &amp; Kiln (demo store) &middot; 10 disputes &middot; run 2026-10-31</p>
+<p class="note">Airwallex sandbox: these are real sandbox disputes (dst_ ids), simulated on test-card payments at 2026-10-31T02:47:11.210Z over a fictional store. The board shows what the agent decided before submitting; <code>node src/run.js --sandbox --paid --submit</code> then sent each body to the sandbox. Built by an AI agent (Claude) for the Airwallex Agentic Banking hackathon.</p>
+<div class="tiles"><div class="tile"><b>1</b><span>Needs you</span></div><div class="tile"><b>6</b><span>Challenge</span></div><div class="tile"><b>2</b><span>Accept</span></div><div class="tile"><b>1</b><span>No action</span></div>
+<div class="tile"><b>883.00</b><span>USD open</span></div>
+<div class="tile"><b>594.00</b><span>USD being fought</span></div></div>
+<article class="case a-CHALLENGE urgent" id="dst_sgpvfc6s8hnpnegh87q">
+  <header>
+    <span class="badge">Challenge</span>
+    <span class="badge hot">Urgent</span>
+    <span class="amt">142.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpnegh87q</code> &middot; CHARGEBACK &middot; 35 hours left</p>
+  <p class="why">FRAUDULENT: every required item is on file <span class="reason">(PURCHASE_HISTORY)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnegh87q_letter.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnegh87q_letter.png</a> <a href="evidence/doc_dst_sgpvfc6s8hnpnegh87q_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnegh87q_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>order_fulfillment_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnegh87q_order_fulfillment.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnegh87q_order_fulfillment.png</a></span></li><li><code>access_activity_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnegh87q_access_activity.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnegh87q_access_activity.png</a></span></li><li><code>previous_purchase_similar_product_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnegh87q_previous_purchase_similar_product.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnegh87q_previous_purchase_similar_product.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>Dear Dispute Reviewer,
+
+Re: dst_sgpvfc6s8hnpnegh87q on payment int_sgpvzhfh9hnpndfu2va
+
+We are responding to the FRAUDULENT reason code for order KK-1052, totaling 142.00 USD. The order was placed on 2026-09-27T21:03:00Z from IP 198.51.100.7 using Windows Chrome, which matches prior activity from this IP/device.
+
+The order was shipped on 2026-09-28T16:00:00Z and tracking code USPS 9400100000000000000004 shows delivery on 2026-10-01T15:10:00Z to Austin, TX 78704. Furthermore, the account holder, Ben Okafor &lt;ben.okafor@example.org&gt;, viewed the tracking on 2026-10-02T08:12:00Z.
+
+Kettle &amp; Kiln (demo store)</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpnegh87q FRAUDULENT CHARGEBACK REQUIRES_RESPONSE, 142.00 USD, due 2026-11-01T14:46:10.000+00:00</li><li><b>gather</b> order KK-1052 found</li><li><b>gather</b> delivered 2026-10-01 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>decide</b> CHALLENGE (PURCHASE_HISTORY): FRAUDULENT: every required item is on file [URGENT]</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpvfc6s8hnpnegh87q/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpvfc6s8hnpnegh87q-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;PURCHASE_HISTORY&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnegh87q_letter&quot;,
+        &quot;doc_dst_sgpvfc6s8hnpnegh87q_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;order_fulfillment_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnegh87q_order_fulfillment&quot;
+      ],
+      &quot;access_activity_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnegh87q_access_activity&quot;
+      ],
+      &quot;previous_purchase_similar_product_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnegh87q_previous_purchase_similar_product&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-ESCALATE" id="dst_sgpvfc6s8hnpnegyv8v">
+  <header>
+    <span class="badge">Needs you</span>
+    
+    <span class="amt">210.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpnegyv8v</code> &middot; CHARGEBACK &middot; 11 days left</p>
+  <p class="why">missing required evidence (access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids) and 210 is above the auto-accept limit</p>
+  
+  
+  <h3>Missing</h3><ul class="fields miss"><li><code>access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids</code></li></ul>
+  <details><summary>Audit trail (6 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpnegyv8v FRAUDULENT CHARGEBACK REQUIRES_RESPONSE, 210.00 USD, due 2026-11-12T02:46:10.000+00:00</li><li><b>gather</b> order KK-1058 found</li><li><b>gather</b> delivered 2026-10-03 (UPS)</li><li><b>gather</b> guest checkout: no account activity to show</li><li><b>decide</b> ESCALATE: missing required evidence (access_activity_file_ids or previous_purchase_similar_product_file_ids or previous_dispute_won_on_same_card_file_ids) and 210 is above the auto-accept limit</li><li><b>escalate</b> case card sent to the merchant; nothing is submitted without them</li></ol></details>
+  
+</article>
+<article class="case a-CHALLENGE" id="dst_sgpv8mrgwhnpnej1a6l">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">54.00 USD</span>
+  </header>
+  <h2>PRODUCT_UNACCEPTABLE <small>13.3</small></h2>
+  <p class="meta"><code>dst_sgpv8mrgwhnpnej1a6l</code> &middot; CHARGEBACK &middot; 7 days left</p>
+  <p class="why">PRODUCT_UNACCEPTABLE: every required item is on file <span class="reason">(NOT_ENTITLED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnej1a6l_letter.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnej1a6l_letter.png</a> <a href="evidence/doc_dst_sgpv8mrgwhnpnej1a6l_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnej1a6l_order_snapshot.png</a></span></li><li><code>product_description</code><span>Tasting cups, set of 4: Four 80 ml stoneware cups, ash glaze, hand-thrown.</span></li><li><code>product_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnej1a6l_product_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnej1a6l_product_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>refund_policy_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnej1a6l_refund_policy.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnej1a6l_refund_policy.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>Dear Dispute Reviewer,
+
+Re: dst_sgpv8mrgwhnpnej1a6l on payment int_sgpvzhfh9hnpndgt251
+
+This chargeback is for the purchase of Tasting cups, set of 4 for 54.00 USD, placed on 2026-07-14T09:40:00Z. The order, KK-0951, was placed by Ben Okafor &lt;ben.okafor@example.org&gt; from IP 198.51.100.7.
+
+The product listing confirms the item as &quot;Tasting cups, set of 4 - 54.00 USD - Four 80 ml stoneware cups, ash glaze, hand-thrown.&quot; Our policy allows returns for unopened items within 30 days of delivery.
+
+Kettle &amp; Kiln</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpv8mrgwhnpnej1a6l PRODUCT_UNACCEPTABLE CHARGEBACK REQUIRES_RESPONSE, 54.00 USD, due 2026-11-08T02:46:10.000+00:00</li><li><b>gather</b> order KK-0951 found</li><li><b>gather</b> delivered 2026-07-18 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>decide</b> CHALLENGE (NOT_ENTITLED): PRODUCT_UNACCEPTABLE: every required item is on file</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpv8mrgwhnpnej1a6l/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpv8mrgwhnpnej1a6l-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;NOT_ENTITLED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnej1a6l_letter&quot;,
+        &quot;doc_dst_sgpv8mrgwhnpnej1a6l_order_snapshot&quot;
+      ],
+      &quot;product_description&quot;: &quot;Tasting cups, set of 4: Four 80 ml stoneware cups, ash glaze, hand-thrown.&quot;,
+      &quot;product_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnej1a6l_product_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;refund_policy_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnej1a6l_refund_policy&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="dst_sgpv8mrgwhnpnefz5o4">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">86.00 USD</span>
+  </header>
+  <h2>PRODUCT_NOT_RECEIVED <small>13.1</small></h2>
+  <p class="meta"><code>dst_sgpv8mrgwhnpnefz5o4</code> &middot; CHARGEBACK &middot; 9 days left</p>
+  <p class="why">PRODUCT_NOT_RECEIVED: every required item is on file <span class="reason">(PRODUCT_RECEIVED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnefz5o4_letter.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnefz5o4_letter.png</a> <a href="evidence/doc_dst_sgpv8mrgwhnpnefz5o4_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnefz5o4_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>order_fulfilled_at</code><span>2026-09-24</span></li><li><code>order_fulfillment_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnefz5o4_order_fulfillment.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnefz5o4_order_fulfillment.png</a></span></li><li><code>customer_communication_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnefz5o4_customer_communication.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnefz5o4_customer_communication.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>To the Dispute Reviewer,
+
+Re: dst_sgpv8mrgwhnpnefz5o4 / int_sgpvzhfh9hnpndfmzgr
+
+This chargeback reason code PRODUCT_NOT_RECEIVED is incorrect. Our records show the order KK-1041, placed on 2026-09-20T15:02:00Z for 86.00 USD, was shipped on 2026-09-21T18:00:00Z. The delivery proof, UPS 1Z999AA10123456784, confirms it was delivered on 2026-09-24T19:41:00Z. Furthermore, we have an email from Ava Lindqvist &lt;ava.lindqvist@example.net&gt; on 2026-09-25T07:45:00Z stating, &quot;Teapot arrived&quot;.
+
+Kettle &amp; Kiln (demo store)</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpv8mrgwhnpnefz5o4 PRODUCT_NOT_RECEIVED CHARGEBACK REQUIRES_RESPONSE, 86.00 USD, due 2026-11-10T02:46:10.000+00:00</li><li><b>gather</b> order KK-1041 found</li><li><b>gather</b> delivered 2026-09-24 (UPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 account event(s) from the order&#39;s IP/device</li><li><b>decide</b> CHALLENGE (PRODUCT_RECEIVED): PRODUCT_NOT_RECEIVED: every required item is on file</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpv8mrgwhnpnefz5o4/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpv8mrgwhnpnefz5o4-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;PRODUCT_RECEIVED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnefz5o4_letter&quot;,
+        &quot;doc_dst_sgpv8mrgwhnpnefz5o4_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;order_fulfilled_at&quot;: &quot;2026-09-24&quot;,
+      &quot;order_fulfillment_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnefz5o4_order_fulfillment&quot;
+      ],
+      &quot;customer_communication_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnefz5o4_customer_communication&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="dst_sgpv8mrgwhnpnehltk3">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">38.00 USD</span>
+  </header>
+  <h2>CREDIT_NOT_PROCESSED <small>13.6</small></h2>
+  <p class="meta"><code>dst_sgpv8mrgwhnpnehltk3</code> &middot; CHARGEBACK &middot; 10 days left</p>
+  <p class="why">CREDIT_NOT_PROCESSED: every required item is on file <span class="reason">(NOT_ENTITLED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnehltk3_letter.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnehltk3_letter.png</a> <a href="evidence/doc_dst_sgpv8mrgwhnpnehltk3_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnehltk3_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>refund_policy_url</code><span>https://kettle-and-kiln.example/policies/refunds</span></li><li><code>refund_policy_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnehltk3_refund_policy.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnehltk3_refund_policy.png</a></span></li><li><code>user_agreement_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnehltk3_user_agreement.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnehltk3_user_agreement.png</a></span></li><li><code>customer_communication_file_ids</code><span><a href="evidence/doc_dst_sgpv8mrgwhnpnehltk3_customer_communication.png" target="_blank" rel="noopener">doc_dst_sgpv8mrgwhnpnehltk3_customer_communication.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>To the Dispute Reviewer,
+
+Re: dst_sgpv8mrgwhnpnehltk3 on payment int_sgpvzhfh9hnpndg851o
+
+This dispute is for order KK-1060, placed on 2026-09-30T11:00:00Z for 38.00 USD. The customer, Cleo Ramirez &lt;cleo.r@example.net&gt;, accepted our terms at checkout, which state that tracked delivery is proof of delivery.
+
+Our communication on 2026-10-01T10:30:00Z confirms the order shipped and advises the customer that they can return unopened items within 30 days of delivery for a full refund, as per our policy at https://kettle-and-kiln.example/policies/refunds.
+
+Kettle &amp; Kiln</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (7 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpv8mrgwhnpnehltk3 CREDIT_NOT_PROCESSED CHARGEBACK REQUIRES_RESPONSE, 38.00 USD, due 2026-11-11T02:46:10.000+00:00</li><li><b>gather</b> order KK-1060 found</li><li><b>gather</b> delivered 2026-10-04 (USPS)</li><li><b>gather</b> 2 email(s) with the customer</li><li><b>decide</b> CHALLENGE (NOT_ENTITLED): CREDIT_NOT_PROCESSED: every required item is on file</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpv8mrgwhnpnehltk3/challenge with 6 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpv8mrgwhnpnehltk3-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;NOT_ENTITLED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnehltk3_letter&quot;,
+        &quot;doc_dst_sgpv8mrgwhnpnehltk3_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;refund_policy_url&quot;: &quot;https://kettle-and-kiln.example/policies/refunds&quot;,
+      &quot;refund_policy_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnehltk3_refund_policy&quot;
+      ],
+      &quot;user_agreement_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnehltk3_user_agreement&quot;
+      ],
+      &quot;customer_communication_file_ids&quot;: [
+        &quot;doc_dst_sgpv8mrgwhnpnehltk3_customer_communication&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="dst_sgpvfc6s8hnpneikcoz">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">64.00 USD</span>
+  </header>
+  <h2>DUPLICATE_CHARGE <small>12.6</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpneikcoz</code> &middot; CHARGEBACK &middot; 12 days left</p>
+  <p class="why">DUPLICATE_CHARGE: every required item is on file <span class="reason">(SEPARATE_PRODUCT)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpneikcoz_letter.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpneikcoz_letter.png</a> <a href="evidence/doc_dst_sgpvfc6s8hnpneikcoz_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpneikcoz_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>duplicate_explanation</code><span>Two separate orders, not one order charged twice: KK-1064 (Matcha starter kit) and KK-1065 (Tasting cups, set of 4, Single tea sample, 10 g), placed 2026-10-02T17:20:00Z and 2026-10-02T17:48:00Z, each shipped and delivered separately.</span></li><li><code>duplicate_transaction_created_at</code><span>2026-10-02T17:20:00Z</span></li><li><code>duplicate_payment_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpneikcoz_duplicate_payment.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpneikcoz_duplicate_payment.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>To the Dispute Reviewer,
+
+Re: dst_sgpvfc6s8hnpneikcoz on payment int_sgpvzhfh9hnpndgm5oi
+
+This chargeback reason code is incorrect. The two transactions, KK-1064 placed 2026-10-02T17:20:00Z for 64.00 USD and KK-1065 placed 2026-10-02T17:48:00Z for 64.00 USD, are for separate products.
+
+KK-1064 was for a Matcha starter kit and shipped with tracking USPS 9400100000000000000007. KK-1065 was for Tasting cups, set of 4, Single tea sample, 10 g, placed by Eli Watanabe &lt;eli.w@example.org&gt; from IP 203.0.113.150.
+
+Kettle &amp; Kiln (demo store)</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (9 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpneikcoz DUPLICATE_CHARGE CHARGEBACK REQUIRES_RESPONSE, 64.00 USD, due 2026-11-13T02:46:10.000+00:00</li><li><b>gather</b> order KK-1065 found</li><li><b>gather</b> delivered 2026-10-06 (USPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>gather</b> KK-1064 is a separate order with different items</li><li><b>decide</b> CHALLENGE (SEPARATE_PRODUCT): DUPLICATE_CHARGE: every required item is on file</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpvfc6s8hnpneikcoz/challenge with 5 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpvfc6s8hnpneikcoz-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;SEPARATE_PRODUCT&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpneikcoz_letter&quot;,
+        &quot;doc_dst_sgpvfc6s8hnpneikcoz_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;duplicate_explanation&quot;: &quot;Two separate orders, not one order charged twice: KK-1064 (Matcha starter kit) and KK-1065 (Tasting cups, set of 4, Single tea sample, 10 g), placed 2026-10-02T17:20:00Z and 2026-10-02T17:48:00Z, each shipped and delivered separately.&quot;,
+      &quot;duplicate_transaction_created_at&quot;: &quot;2026-10-02T17:20:00Z&quot;,
+      &quot;duplicate_payment_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpneikcoz_duplicate_payment&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-CHALLENGE" id="dst_sgpvfc6s8hnpnejzoox">
+  <header>
+    <span class="badge">Challenge</span>
+    
+    <span class="amt">210.00 USD</span>
+  </header>
+  <h2>CANCELLED_PRODUCT <small>13.7</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpnejzoox</code> &middot; CHARGEBACK &middot; 14 days left</p>
+  <p class="why">CANCELLED_PRODUCT: every required item is on file <span class="reason">(NOT_ENTITLED)</span></p>
+  <h3>Evidence it would send</h3><ul class="fields"><li><code>order_snapshot_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnejzoox_letter.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnejzoox_letter.png</a> <a href="evidence/doc_dst_sgpvfc6s8hnpnejzoox_order_snapshot.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnejzoox_order_snapshot.png</a></span></li><li><code>merchant_business_model_description</code><span>Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.</span></li><li><code>refund_policy_url</code><span>https://kettle-and-kiln.example/policies/refunds</span></li><li><code>refund_policy_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnejzoox_refund_policy.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnejzoox_refund_policy.png</a></span></li><li><code>user_agreement_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnejzoox_user_agreement.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnejzoox_user_agreement.png</a></span></li><li><code>customer_communication_file_ids</code><span><a href="evidence/doc_dst_sgpvfc6s8hnpnejzoox_customer_communication.png" target="_blank" rel="noopener">doc_dst_sgpvfc6s8hnpnejzoox_customer_communication.png</a></span></li></ul>
+  <details class="letter"><summary>Rebuttal letter (model-written, fact-checked)</summary><pre>To the Dispute Reviewer,
+
+Re: dst_sgpvfc6s8hnpnejzoox on payment int_sgpvzhfh9hnpndh7dko
+
+The chargeback reason is NOT_ENTITLED. Order KK-0990 for 210.00 USD was placed on 2026-08-10T10:00:00Z by Ava Lindqvist &lt;ava.lindqvist@example.net&gt; from IP 203.0.113.24. Customer communication on 2026-09-25T07:45:00Z confirms receipt of the teapot.
+
+Our terms accepted at checkout state that tracked delivery to the shipping address is proof of delivery. The refund policy allows returns for unopened items within 30 days of delivery.
+
+Kettle &amp; Kiln</pre><p class="meta">written by gemma4:e4b; every figure checked against the attached records</p></details>
+  
+  <details><summary>Audit trail (8 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpnejzoox CANCELLED_PRODUCT CHARGEBACK REQUIRES_RESPONSE, 210.00 USD, due 2026-11-15T02:46:10.000+00:00</li><li><b>gather</b> order KK-0990 found</li><li><b>gather</b> delivered 2026-08-14 (UPS)</li><li><b>gather</b> 1 email(s) with the customer</li><li><b>gather</b> 1 account event(s) from the order&#39;s IP/device</li><li><b>decide</b> CHALLENGE (NOT_ENTITLED): CANCELLED_PRODUCT: every required item is on file</li><li><b>letter</b> written by gemma4:e4b; every figure checked against the attached records</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpvfc6s8hnpnejzoox/challenge with 6 evidence field(s)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpvfc6s8hnpnejzoox-2026-10-31&quot;,
+  &quot;challenge_method&quot;: &quot;STANDARD&quot;,
+  &quot;challenge_details&quot;: {
+    &quot;reason&quot;: &quot;NOT_ENTITLED&quot;,
+    &quot;stage&quot;: &quot;CHARGEBACK&quot;,
+    &quot;product_type&quot;: &quot;PHYSICAL_GOODS&quot;,
+    &quot;evidence&quot;: {
+      &quot;order_snapshot_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnejzoox_letter&quot;,
+        &quot;doc_dst_sgpvfc6s8hnpnejzoox_order_snapshot&quot;
+      ],
+      &quot;merchant_business_model_description&quot;: &quot;Online shop selling loose-leaf tea and handmade ceramic teaware, shipped by tracked parcel from one warehouse.&quot;,
+      &quot;refund_policy_url&quot;: &quot;https://kettle-and-kiln.example/policies/refunds&quot;,
+      &quot;refund_policy_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnejzoox_refund_policy&quot;
+      ],
+      &quot;user_agreement_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnejzoox_user_agreement&quot;
+      ],
+      &quot;customer_communication_file_ids&quot;: [
+        &quot;doc_dst_sgpvfc6s8hnpnejzoox_customer_communication&quot;
+      ]
+    }
+  }
+}</pre></details>
+</article>
+<article class="case a-ACCEPT" id="dst_sgpvfc6s8hnpnei35v6">
+  <header>
+    <span class="badge">Accept</span>
+    
+    <span class="amt">12.00 USD</span>
+  </header>
+  <h2>PRODUCT_UNACCEPTABLE <small>13.3</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpnei35v6</code> &middot; RFI &middot; 8 days left</p>
+  <p class="why">12 is below the cost of fighting (15) <span class="reason">(LOW_VALUE_TRANSACTION)</span></p>
+  
+  
+  
+  <details><summary>Audit trail (5 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpnei35v6 PRODUCT_UNACCEPTABLE RFI REQUIRES_RESPONSE, 12.00 USD, due 2026-11-09T02:46:10.000+00:00</li><li><b>gather</b> order KK-1062 found</li><li><b>gather</b> delivered 2026-10-05 (USPS)</li><li><b>decide</b> ACCEPT (LOW_VALUE_TRANSACTION): 12 is below the cost of fighting (15)</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpvfc6s8hnpnei35v6/accept (LOW_VALUE_TRANSACTION)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpvfc6s8hnpnei35v6-2026-10-31&quot;,
+  &quot;accepted_by&quot;: &quot;rebuttal-agent&quot;,
+  &quot;reason&quot;: &quot;LOW_VALUE_TRANSACTION&quot;,
+  &quot;description&quot;: &quot;12 is below the cost of fighting (15)&quot;,
+  &quot;refund&quot;: {
+    &quot;amount&quot;: 12,
+    &quot;reason&quot;: &quot;REQUESTED_BY_CUSTOMER&quot;
+  }
+}</pre></details>
+</article>
+<article class="case a-ACCEPT" id="dst_sgpvfc6s8hnpnejie08">
+  <header>
+    <span class="badge">Accept</span>
+    
+    <span class="amt">29.00 USD</span>
+  </header>
+  <h2>PRODUCT_NOT_RECEIVED <small>13.1</small></h2>
+  <p class="meta"><code>dst_sgpvfc6s8hnpnejie08</code> &middot; CHARGEBACK &middot; 13 days left</p>
+  <p class="why">missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit <span class="reason">(VALID_CUSTOMER_DISPUTE)</span></p>
+  
+  
+  <h3>Missing</h3><ul class="fields miss"><li><code>order_fulfillment_file_ids</code></li><li><code>order_fulfilled_at</code></li></ul>
+  <details><summary>Audit trail (5 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpvfc6s8hnpnejie08 PRODUCT_NOT_RECEIVED CHARGEBACK REQUIRES_RESPONSE, 29.00 USD, due 2026-11-14T02:46:10.000+00:00</li><li><b>gather</b> order KK-1066 found</li><li><b>gather</b> shipped 2026-10-04 (USPS 9400100000000000000009) but no delivery scan - not proof of delivery</li><li><b>decide</b> ACCEPT (VALID_CUSTOMER_DISPUTE): missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit</li><li><b>submit</b> dry run: POST /api/v1/pa/payment_disputes/dst_sgpvfc6s8hnpnejie08/accept (VALID_CUSTOMER_DISPUTE)</li></ol></details>
+  <details><summary>Request body (dry run, not sent)</summary><pre>{
+  &quot;request_id&quot;: &quot;rebuttal-dst_sgpvfc6s8hnpnejie08-2026-10-31&quot;,
+  &quot;accepted_by&quot;: &quot;rebuttal-agent&quot;,
+  &quot;reason&quot;: &quot;VALID_CUSTOMER_DISPUTE&quot;,
+  &quot;description&quot;: &quot;missing required evidence (order_fulfillment_file_ids; order_fulfilled_at) and 29 is within the auto-accept limit&quot;
+}</pre></details>
+</article>
+<article class="case a-NONE" id="dst_sgpv8mrgwhnpnekg9u0">
+  <header>
+    <span class="badge">No action</span>
+    
+    <span class="amt">38.00 USD</span>
+  </header>
+  <h2>FRAUDULENT <small>10.4</small></h2>
+  <p class="meta"><code>dst_sgpv8mrgwhnpnekg9u0</code> &middot; CHARGEBACK &middot; deadline passed</p>
+  <p class="why">past due_at; the window has closed</p>
+  
+  
+  
+  <details><summary>Audit trail (6 steps)</summary><ol class="trail"><li><b>fetch</b> dst_sgpv8mrgwhnpnekg9u0 FRAUDULENT CHARGEBACK REQUIRES_RESPONSE, 38.00 USD, due 2026-10-07T02:46:10.000+00:00</li><li><b>gather</b> order KK-1003 found</li><li><b>gather</b> delivered 2026-09-03 (USPS)</li><li><b>gather</b> 2 account event(s) from the order&#39;s IP/device</li><li><b>gather</b> 1 earlier undisputed order(s) on the same card</li><li><b>decide</b> NONE: past due_at; the window has closed</li></ol></details>
+  
+</article>
+<footer>Source: <a href="https://github.com/Stephen-Psaradellis/rebuttal">github.com/Stephen-Psaradellis/rebuttal</a> (MIT). The agent never challenges with required evidence missing, never accepts above the merchant's limit, hands arbitration stages to a person, and sends a model-written rebuttal letter only when every figure in it appears in the attached records.</footer>
+</main></body></html>

@@ -111,3 +111,17 @@ test('sub-codes the docs table lacks fold to their listed parent', async () => {
   assert.equal(sandboxCode('10.4'), '10.4');
   assert.equal(sandboxCode(undefined), undefined);
 });
+
+test('fromSeed points each disputed order at its real sandbox intent', async () => {
+  const { fromSeed } = await import('../src/sandbox.js');
+  const store = load('store.json');
+  const fixtures = load('disputes.json');
+  const order = store.orders.find((o) => o.payment_intent_id === fixtures[0].payment_intent_id);
+  const d = { ...fixtures[0], id: 'dst_real1', payment_intent_id: 'int_real1' };
+  const out = fromSeed({ at: 'x', disputes: [d] }, [{ intent_id: 'int_real1', order: order.id }], store);
+  assert.equal(out.store.orders.find((o) => o.id === order.id).payment_intent_id, 'int_real1');
+  assert.notEqual(store.orders.find((o) => o.id === order.id).payment_intent_id, 'int_real1');
+  const r = processAll(out.disputes, out.store, { now: NOW });
+  assert.notEqual(r[0].decision.action, undefined);
+  assert.throws(() => fromSeed({ disputes: [d] }, [], store), /no intent/);
+});

@@ -75,6 +75,11 @@ accepted (a $12 case below the cost of fighting; a lost parcel with no delivery
 scan), 2 escalated (a guest-checkout fraud claim above the auto-accept limit; a
 pre-arbitration case), 1 already closed.
 
+Case board over the real sandbox disputes (10 `dst_` ids from the 2026-10-31 run, decisions as made
+before submitting): https://stephen-psaradellis.github.io/rebuttal/sandbox/ - built with
+`node src/board.js --seed out/sandbox-seed.json --out docs/sandbox` (reads `out/intents.json` to
+map each dispute back to its store order; creates nothing).
+
 Case board (static, from the demo pass): https://stephen-psaradellis.github.io/rebuttal/ -
 cases that need the merchant first, then by deadline; each card shows the
 decision and why, the evidence fields it would send with the rendered pages,
@@ -142,8 +147,7 @@ and the seed log says so).
 
 ## Next
 
-Serve the board from the sandbox run with a live trace of every step, and recut
-the video with `--mode sandbox`.
+Recut the video with `--mode sandbox` over the sandbox board.
 
 ## Data
 

@@ -162,3 +162,17 @@ export async function verdicts(client, results, outcome) {
   }
   return report;
 }
+
+// fromSeed -> { disputes, store }: rebuild what seed() returned from the files a
+// --paid run leaves behind (out/sandbox-seed.json + out/intents.json), so the
+// board can be drawn over the real sandbox disputes without creating new ones.
+export function fromSeed(seedFile, intents, store) {
+  const mapped = structuredClone(store);
+  for (const d of seedFile.disputes) {
+    const x = intents.find((i) => i.intent_id === d.payment_intent_id);
+    const order = x && mapped.orders.find((o) => o.id === x.order);
+    if (!order) throw new Error(`${d.id}: no intent/order for ${d.payment_intent_id}`);
+    order.payment_intent_id = d.payment_intent_id;
+  }
+  return { disputes: seedFile.disputes, store: mapped };
+}
